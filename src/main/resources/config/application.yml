@@ -1,0 +1,19 @@
+## YAML Template.
+---
+## YAML Template.
+---
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.driver-class-name: org.postgresql.Driver
+spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
+spring.datasource.username: postgres    
+spring.datasource.password: jabm0010
+
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect : org.hibernate.dialect.PostgreSQLDialect
+
+# Hibernate ddl auto (create, create, validate, update)
+spring.jpa.hibernate.ddl-auto : update
+
+spring.jpa.properties.hibernate.enable_lazy_load_no_trans: true
+
+spring.datasource.tomcat.max-active: 50

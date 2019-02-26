@@ -1,1 +1,14 @@
+org\ujaen\apptfg\Servidor\Servicios\InterfazServiciosMedico.class
+org\ujaen\apptfg\Servidor\Modelo\Medico.class
+org\ujaen\apptfg\Servidor\Servicios\InterfazServiciosPaciente.class
+org\ujaen\apptfg\Servidor\Modelo\Mensaje.class
+org\ujaen\apptfg\Servidor\Modelo\Terapia.class
+org\ujaen\apptfg\Servidor\Modelo\Chat.class
+org\ujaen\apptfg\Servidor\Modelo\Usuario.class
+org\ujaen\apptfg\Servidor\Modelo\Usuario$Rol.class
+org\ujaen\apptfg\Cliente\ClientePruebas.class
+org\ujaen\apptfg\Servidor\Servicios\GestorMedico.class
 org\ujaen\apptfg\Servidor\ServidorTerapias.class
+org\ujaen\apptfg\Servidor\Modelo\EjercicioTerapeutico.class
+org\ujaen\apptfg\Servidor\Modelo\Paciente.class
+org\ujaen\apptfg\Servidor\Servicios\GestorPaciente.class

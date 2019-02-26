@@ -8,6 +8,7 @@ package org.ujaen.apptfg.Servidor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.ujaen.apptfg.Cliente.ClientePruebas;
 
 /**
  *
@@ -20,6 +21,9 @@ public class ServidorTerapias {
         SpringApplication servidor = new SpringApplication(ServidorTerapias.class);
         ApplicationContext context = servidor.run(args);
         System.out.println("TFG");
+        
+        ClientePruebas cliente = new ClientePruebas(context);
+        cliente.run();
         
         
         
