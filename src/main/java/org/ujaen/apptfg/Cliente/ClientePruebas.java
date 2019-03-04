@@ -6,6 +6,7 @@
 package org.ujaen.apptfg.Cliente;
 
 import org.springframework.context.ApplicationContext;
+import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosMedico;
 
 /**
@@ -26,13 +27,18 @@ public class ClientePruebas {
         
         InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
         
-        String correo = "jabm97@gmail.com";
+        String correo = "jabm979@gmail.com";
         String nombre = "Pepe";
         String apellidos = "Martinez";
+        String clave = "pwd";
         
-        serviciosMedico.registro(correo, nombre, apellidos);
+        MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos,clave);
         
-        serviciosMedico.registro(correo, nombre, apellidos); 
+        serviciosMedico.registro(medicoDTO);
+        
+        
+        System.out.println("ppppp");
+        serviciosMedico.registro(medicoDTO); 
         //  Detail: Key (correo_electronico)=(jabm97@gmail.com) already exists.
         }catch(Exception e){
             System.out.println(e.toString());

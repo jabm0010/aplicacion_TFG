@@ -5,10 +5,13 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
+
 /**
  *
  * @author Juan Antonio Béjar Martos
  */
 public interface InterfazServiciosPaciente {
-    
+
+    boolean registro(PacienteDTO paciente);
 }

@@ -18,18 +18,20 @@ import org.ujaen.apptfg.Servidor.Modelo.Medico;
  * @author Juan Antonio Béjar Martos
  */
 @Repository
-@Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MedicoDAO {
 
     @PersistenceContext
     EntityManager em;
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public void registrarUsuario(Medico medico) {
-        try {
-            em.persist(medico);
-        } catch (RuntimeException ex) {
-            throw new ExcepcionUsuarioRegistrado();
-        }
+//        try {
+//            em.persist(medico);
+//        } catch (RuntimeException ex) {
+//            throw new ExcepcionUsuarioRegistrado();
+//        }
+
+        em.persist(medico);
     }
 }

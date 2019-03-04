@@ -5,10 +5,12 @@
  */
 package org.ujaen.apptfg.Servidor.Modelo;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+
 
 /**
  *
@@ -17,31 +19,39 @@ import javax.persistence.InheritanceType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-
 public class Usuario {
 
     public enum Rol {
-        MEDICO,PACIENTE   
+        MEDICO, PACIENTE
     }
-    
+
     @Id
     private String correoElectronico;
     private String nombre;
     private String apellidos;
+    private String clave;
+  
     
-    
-    public Usuario(){
+
+
+
+    public Usuario() {
         this.correoElectronico = "";
         this.nombre = "";
         this.apellidos = "";
-        
+        this.clave = "";
+
     }
-    
-    public Usuario(String correoElectronico, String nombre, String apellidos){
+
+    public Usuario(String correoElectronico, String nombre, String apellidos, String clave) {
         this.correoElectronico = correoElectronico;
         this.nombre = nombre;
         this.apellidos = apellidos;
+        this.clave = clave;
     }
+    
+        
+    
     
 
     /**
@@ -86,8 +96,18 @@ public class Usuario {
         this.apellidos = apellidos;
     }
 
+    /**
+     * @return the clave
+     */
+    public String getClave() {
+        return clave;
+    }
 
-    
-  
+    /**
+     * @param clave the contraseña to set
+     */
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
 
 }

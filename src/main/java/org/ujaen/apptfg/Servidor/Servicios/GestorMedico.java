@@ -5,10 +5,10 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
+import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 
 /**
@@ -16,20 +16,19 @@ import org.ujaen.apptfg.Servidor.Modelo.Medico;
  * @author Juan Antonio Béjar Martos
  */
 @Component
-public class GestorMedico implements InterfazServiciosMedico{
-    
+public class GestorMedico implements InterfazServiciosMedico {
+
     @Autowired
     MedicoDAO medicoDAO;
-    
+
     @Override
-    public boolean registro(String correoElectronico, String nombre, String apellidos) {
-        Medico medico = new Medico(correoElectronico, nombre, apellidos);
-        medicoDAO.registrarUsuario(medico);
+    public boolean registro(MedicoDTO medico) {
+
+        Medico medicotmp = new Medico();
+        medicotmp = medicotmp.MedicoFromDTO(medico);
+        medicoDAO.registrarUsuario(medicotmp);
         return true;
 
     }
 
-
-    
-    
 }
