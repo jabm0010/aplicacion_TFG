@@ -29,13 +29,13 @@ public class Paciente extends Usuario{
     }
     
 
-    public PacienteDTO PacienteToDTO(){
+    public PacienteDTO pacienteToDTO(){
         PacienteDTO pacienteDTO = new PacienteDTO(super.getCorreoElectronico(), 
                 super.getNombre(), super.getApellidos(),super.getClave());
         return pacienteDTO;
     }
     
-    public Paciente PacienteFromDTO(PacienteDTO pacienteDTO){
+    public Paciente pacienteFromDTO(PacienteDTO pacienteDTO){
         Paciente paciente = new Paciente(pacienteDTO.getCorreoElectronico(),pacienteDTO.getNombre(),
                 pacienteDTO.getApellidos(),pacienteDTO.getClave());
         return paciente;

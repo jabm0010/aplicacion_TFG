@@ -5,6 +5,7 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 
 /**
@@ -13,6 +14,10 @@ import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
  */
 public interface InterfazServiciosMedico {
     
-    boolean registro(MedicoDTO medico);
+    void registro(MedicoDTO medico);
+    
+    void crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
+    
+    
     
 }

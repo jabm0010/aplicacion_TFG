@@ -13,5 +13,5 @@ import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
  */
 public interface InterfazServiciosPaciente {
 
-    boolean registro(PacienteDTO paciente);
+    void registro(PacienteDTO paciente);
 }

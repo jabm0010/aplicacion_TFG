@@ -22,12 +22,12 @@ public class GestorPaciente implements InterfazServiciosPaciente{
 
 
     @Override
-    public boolean registro(PacienteDTO paciente) {
+    public void registro(PacienteDTO paciente) {
 
         Paciente pacientetmp = new Paciente();
-        pacientetmp = pacientetmp.PacienteFromDTO(paciente);
+        pacientetmp = pacientetmp.pacienteFromDTO(paciente);
         pacienteDAO.registrarUsuario(pacientetmp);
-        return true;
+        
 
     }
 }

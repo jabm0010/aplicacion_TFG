@@ -26,12 +26,27 @@ public class MedicoDAO {
 
     @Transactional
     public void registrarUsuario(Medico medico) {
-//        try {
-//            em.persist(medico);
-//        } catch (RuntimeException ex) {
-//            throw new ExcepcionUsuarioRegistrado();
-//        }
+        try {
+            em.persist(medico);
+        } catch (RuntimeException ex) {
+            throw new ExcepcionUsuarioRegistrado();
+        }
 
-        em.persist(medico);
+      
     }
+    
+    @Transactional
+    public Medico buscarMedico(String correoElectronico) {
+         Medico medico = em.find(Medico.class, correoElectronico); 
+         return medico;
+        
+    }
+    
+    @Transactional
+    public void actualizarMedico(Medico medico){
+        System.out.println(medico.getEjerciciosCreados());
+        System.out.println(medico.getEjerciciosCreados().get(0).getDescripcion());
+        em.merge(medico);
+    }
+    
 }

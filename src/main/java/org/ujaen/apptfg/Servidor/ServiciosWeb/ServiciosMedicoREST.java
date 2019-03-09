@@ -6,14 +6,19 @@
 package org.ujaen.apptfg.Servidor.ServiciosWeb;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.UsuarioDTO;
 import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 
 /**
@@ -22,29 +27,30 @@ import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
  */
 @RestController
 @CrossOrigin
-@RequestMapping("/")
+@RequestMapping("/medicos")
 public class ServiciosMedicoREST {
 
     @Autowired
     GestorMedico gestorMedico;
 
-    @RequestMapping(value = "/saludo", method = GET)
-    public String saludar() {
-          System.out.println("E");
-        String saludo = "hola";
+    @RequestMapping(value = "/{medico}/ejercicios", method = POST, consumes = "application/json")
+    public ResponseEntity<Void> crearEjercicioTerapeutico(
+            @PathVariable String medico,
+            @RequestBody EjercicioTerapeuticoDTO ejercicio) {
+
+        if(ejercicio.getTitulo().trim().isEmpty() || ejercicio.getTitulo().trim().isEmpty()){
+             return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }else{
+            try{
+                gestorMedico.crearEjercicioTerapeutico(ejercicio, medico);
+                return new ResponseEntity<>(HttpStatus.CREATED);
+                
+            }catch(RuntimeException e){
+                System.out.println(e.toString());
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+        }
         
-        return saludo;
-    }
-
-    @RequestMapping(value = "/medico", method = POST, consumes = "application/json")
-    public boolean registrar(@RequestBody MedicoDTO medico) {
-        System.out.println("Hola");
-        MedicoDTO tmp = medico;
-
-        gestorMedico.registro(tmp);
         
-        System.out.println("Fine");
-        return true;
     }
-
 }

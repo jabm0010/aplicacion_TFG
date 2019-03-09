@@ -6,6 +6,7 @@
 package org.ujaen.apptfg.Cliente;
 
 import org.springframework.context.ApplicationContext;
+import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosMedico;
 
@@ -36,10 +37,12 @@ public class ClientePruebas {
         
         serviciosMedico.registro(medicoDTO);
         
-        
-        System.out.println("ppppp");
-        serviciosMedico.registro(medicoDTO); 
-        //  Detail: Key (correo_electronico)=(jabm97@gmail.com) already exists.
+        EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO("Terapia espalda","abcdefg");
+        EjercicioTerapeuticoDTO ejercicioTerapeutico2 = new EjercicioTerapeuticoDTO("Terapia pierna","abcdefg");
+         
+        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, correo);
+        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico2, correo);
+        System.out.println("Ejercicio creado");
         }catch(Exception e){
             System.out.println(e.toString());
         }

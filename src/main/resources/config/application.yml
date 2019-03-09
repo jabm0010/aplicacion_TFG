@@ -1,7 +1,5 @@
 ## YAML Template.
 ---
-## YAML Template.
----
 ## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
 spring.datasource.driver-class-name: org.postgresql.Driver
 spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
