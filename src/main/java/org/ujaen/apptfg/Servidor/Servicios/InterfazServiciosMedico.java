@@ -5,6 +5,7 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import java.util.List;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 
@@ -17,6 +18,10 @@ public interface InterfazServiciosMedico {
     void registro(MedicoDTO medico);
     
     void crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
+    
+    List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medico);
+    
+    void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
     
     
     

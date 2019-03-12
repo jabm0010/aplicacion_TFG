@@ -16,11 +16,13 @@ public class EjercicioTerapeuticoDTO {
     private String titulo;
     private String descripcion;
     private LocalDateTime fechaCreacion;
+    private long id;
     
      public EjercicioTerapeuticoDTO(){
         this.titulo = "";
         this.descripcion = "";
-        fechaCreacion = LocalDateTime.now();
+        this.fechaCreacion = LocalDateTime.now();
+        this.id = 0;
         
         
     }
@@ -31,10 +33,11 @@ public class EjercicioTerapeuticoDTO {
         this.fechaCreacion = null;
     }
      
-    public EjercicioTerapeuticoDTO(String titulo, String descripcion, LocalDateTime fechaCreacion){
+    public EjercicioTerapeuticoDTO(String titulo, String descripcion, LocalDateTime fechaCreacion, long id){
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaCreacion = fechaCreacion;
+        this.id = id;
     }
 
     /**
@@ -77,5 +80,19 @@ public class EjercicioTerapeuticoDTO {
      */
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    /**
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(long id) {
+        this.id = id;
     }
 }

@@ -9,6 +9,7 @@ org\ujaen\apptfg\Servidor\ServidorTerapias.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosPacienteREST.class
 org\ujaen\apptfg\Servidor\DAOs\EjercicioTerapeuticoDAO.class
 org\ujaen\apptfg\Servidor\Modelo\Paciente.class
+org\ujaen\apptfg\Servidor\Utiils\Pagina.class
 org\ujaen\apptfg\Servidor\Servicios\InterfazServiciosPaciente.class
 org\ujaen\apptfg\Servidor\Modelo\Mensaje.class
 org\ujaen\apptfg\Servidor\Modelo\Terapia.class

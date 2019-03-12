@@ -44,8 +44,7 @@ public class MedicoDAO {
     
     @Transactional
     public void actualizarMedico(Medico medico){
-        System.out.println(medico.getEjerciciosCreados());
-        System.out.println(medico.getEjerciciosCreados().get(0).getDescripcion());
+
         em.merge(medico);
     }
     

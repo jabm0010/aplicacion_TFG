@@ -7,7 +7,9 @@ package org.ujaen.apptfg.Servidor.Modelo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -25,24 +27,33 @@ public class Medico extends Usuario{
     private Usuario.Rol rol;
     
     @OneToMany(cascade = CascadeType.ALL)
-    private List<EjercicioTerapeutico> ejerciciosCreados;
+    private Map<Long,EjercicioTerapeutico> ejerciciosCreados;
     
     public Medico(){
         super();
         this.rol = Usuario.Rol.MEDICO;
-        ejerciciosCreados = new ArrayList<>();
+        ejerciciosCreados = new HashMap<>();
     }
 
     public Medico(String correoElectronico, String nombre, String apellidos, String clave){
         super(correoElectronico, nombre, apellidos, clave);
         this.rol = Usuario.Rol.MEDICO;
-        ejerciciosCreados = new ArrayList<>();
+        ejerciciosCreados = new HashMap<>();
     
     }
     
     public void crearEjercicioTerapeutico(EjercicioTerapeutico ejercicio){
 
-        ejerciciosCreados.add(ejercicio);
+        ejerciciosCreados.put(ejercicio.getId(),ejercicio);
+        
+    }
+    
+    public void editarEjercicioTerapeutico(EjercicioTerapeutico ejercicio){
+        EjercicioTerapeutico tmp = ejerciciosCreados.get(ejercicio.getId());
+        tmp.setTitulo(ejercicio.getTitulo());
+        tmp.setDescripcion(ejercicio.getDescripcion());
+        
+        ejerciciosCreados.put(ejercicio.getId(), tmp);
         
     }
     
@@ -63,14 +74,14 @@ public class Medico extends Usuario{
     /**
      * @return the ejerciciosCreados
      */
-    public List<EjercicioTerapeutico> getEjerciciosCreados() {
+    public Map<Long,EjercicioTerapeutico> getEjerciciosCreados() {
         return ejerciciosCreados;
     }
 
     /**
      * @param ejerciciosCreados the ejerciciosCreados to set
      */
-    public void setEjerciciosCreados(List<EjercicioTerapeutico> ejerciciosCreados) {
+    public void setEjerciciosCreados(Map<Long,EjercicioTerapeutico> ejerciciosCreados) {
         this.ejerciciosCreados = ejerciciosCreados;
     }
     
