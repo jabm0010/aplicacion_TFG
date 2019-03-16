@@ -1,4 +1,5 @@
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Utiils\Pagina.java
+C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\DAOs\ImagenDAO.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Excepciones\ExcepcionUsuarioRegistrado.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Modelo\Paciente.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosMedicoREST.java
@@ -19,6 +20,7 @@ C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servido
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Modelo\Terapia.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Cliente\ClientePruebas.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosPacienteREST.java
+C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Modelo\Imagen.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Servicios\GestorPaciente.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\Modelo\Usuario.java
 C:\Users\jabm9\Desktop\TFG\aplicacion_TFG\src\main\java\org\ujaen\apptfg\Servidor\DTOs\EjercicioTerapeuticoDTO.java

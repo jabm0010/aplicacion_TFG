@@ -25,8 +25,14 @@ public class MedicoDTO extends UsuarioDTO {
         super(correoElectronico, nombre, apellidos, clave, Usuario.Rol.MEDICO);
     }
     
+        public MedicoDTO(String correoElectronico, String nombre, String apellidos, String clave, String imagen, String nombreimagen) {
+        super(correoElectronico, nombre, apellidos, clave, Usuario.Rol.MEDICO,imagen, nombreimagen);
+    }
+    
+    
     public MedicoDTO(UsuarioDTO usuario){
-        super(usuario.getCorreoElectronico(), usuario.getNombre(), usuario.getApellidos(), usuario.getClave(),Usuario.Rol.MEDICO);
+        super(usuario.getCorreoElectronico(), usuario.getNombre(), usuario.getApellidos(), usuario.getClave(),Usuario.Rol.MEDICO,
+                usuario.getImagen(), usuario.getNombreImagen());
     }
 
 

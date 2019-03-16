@@ -5,18 +5,20 @@
  */
 package org.ujaen.apptfg.Servidor.Modelo;
 
+import java.io.File;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  *
  * @author Juan Antonio Béjar Martos
  */
-
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Usuario {
@@ -30,29 +32,55 @@ public class Usuario {
     private String nombre;
     private String apellidos;
     private String clave;
-  
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @OneToOne
+    private Imagen imagenperfil;
+
     
-
-
-
+    /**
+     * Constructor por defecto
+     */
     public Usuario() {
         this.correoElectronico = "";
         this.nombre = "";
         this.apellidos = "";
         this.clave = "";
+        this.imagenperfil = null;
 
     }
-
+    
+    /**
+     * Constructor de usuario parametrizado sin imagen de perfil
+     * @param correoElectronico
+     * @param nombre
+     * @param apellidos
+     * @param clave 
+     */
     public Usuario(String correoElectronico, String nombre, String apellidos, String clave) {
         this.correoElectronico = correoElectronico;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.clave = clave;
     }
-    
-        
-    
-    
+
+    /**
+     * Constructor de usuario con una imagen de perfil asociada
+     * 
+     * @param correoElectronico
+     * @param nombre
+     * @param apellidos
+     * @param clave
+     * @param imagenPerfil
+     * @param nombreImagen 
+     */
+    public Usuario(String correoElectronico, String nombre, String apellidos, String clave, Imagen imagenperfil) {
+        this.correoElectronico = correoElectronico;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.clave = clave;
+        this.imagenperfil = imagenperfil;
+    }
 
     /**
      * @return the correoElectronico
@@ -108,6 +136,20 @@ public class Usuario {
      */
     public void setClave(String clave) {
         this.clave = clave;
+    }
+
+    /**
+     * @return the imagenperfil
+     */
+    public Imagen getImagenperfil() {
+        return imagenperfil;
+    }
+
+    /**
+     * @param imagenperfil the imagenperfil to set
+     */
+    public void setImagenperfil(Imagen imagenperfil) {
+        this.imagenperfil = imagenperfil;
     }
 
 }

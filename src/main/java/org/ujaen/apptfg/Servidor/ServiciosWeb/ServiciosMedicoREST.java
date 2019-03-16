@@ -57,7 +57,7 @@ public class ServiciosMedicoREST {
 
     }
 
-    @RequestMapping(value = "/{medico}/ejercicios", method = GET, produces = "application/json")
+    @RequestMapping(value = "/{medico}/ejerciciospaginados", method = GET, produces = "application/json")
     public ResponseEntity<Pagina<EjercicioTerapeuticoDTO>> obtenerEjerciciosTerapeuticosPagina(
             @PathVariable String medico,
             @RequestParam(required = false, defaultValue = "0") int page,
@@ -65,6 +65,16 @@ public class ServiciosMedicoREST {
 
         Pagina<EjercicioTerapeuticoDTO> pagina = new Pagina<>(gestorMedico.obtenerEjercicios(medico), page, size);
         return new ResponseEntity<>(pagina, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "/{medico}/ejercicios", method = GET, produces = "application/json")
+    public ResponseEntity<List<EjercicioTerapeuticoDTO>> obtenerEjerciciosTerapeuticos(
+            @PathVariable String medico
+            ) {
+        
+      
+        return new ResponseEntity<>(gestorMedico.obtenerEjercicios(medico), HttpStatus.OK);
 
     }
 

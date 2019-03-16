@@ -22,9 +22,14 @@ public class PacienteDTO extends UsuarioDTO {
         super(correoElectronico, nombre, apellidos, clave, Usuario.Rol.PACIENTE);
 
     }
+    public PacienteDTO(String correoElectronico, String nombre, String apellidos, String clave, String imagen, String nombreimagen) {
+        super(correoElectronico, nombre, apellidos, clave, Usuario.Rol.PACIENTE, imagen, nombreimagen);
+
+    }
 
     public PacienteDTO(UsuarioDTO usuario) {
-        super(usuario.getCorreoElectronico(), usuario.getNombre(), usuario.getApellidos(), usuario.getClave(), Usuario.Rol.PACIENTE);
+        super(usuario.getCorreoElectronico(), usuario.getNombre(), usuario.getApellidos(), usuario.getClave(), Usuario.Rol.PACIENTE,
+        usuario.getImagen(), usuario.getNombreImagen());
     }
 
 }

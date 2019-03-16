@@ -28,21 +28,23 @@ public class ClientePruebas {
         
         InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
         
-        String correo = "jabm979@gmail.com";
-        String nombre = "Pepe";
-        String apellidos = "Martinez";
-        String clave = "pwd";
+        serviciosMedico.pruebaImagen();
         
-        MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos,clave);
-        
-        serviciosMedico.registro(medicoDTO);
-        
-        EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO("Terapia espalda","abcdefg");
-        EjercicioTerapeuticoDTO ejercicioTerapeutico2 = new EjercicioTerapeuticoDTO("Terapia pierna","abcdefg");
-         
-        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, correo);
-        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico2, correo);
-        System.out.println("Ejercicio creado");
+//        String correo = "jabm979@gmail.com";
+//        String nombre = "Pepe";
+//        String apellidos = "Martinez";
+//        String clave = "pwd";
+//        
+//        MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos,clave);
+//        
+//        serviciosMedico.registro(medicoDTO);
+//        
+//        EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO("Terapia espalda","abcdefg");
+//        EjercicioTerapeuticoDTO ejercicioTerapeutico2 = new EjercicioTerapeuticoDTO("Terapia pierna","abcdefg");
+//         
+//        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, correo);
+//        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico2, correo);
+//        System.out.println("Ejercicio creado");
         }catch(Exception e){
             System.out.println(e.toString());
         }

@@ -19,6 +19,9 @@ public class UsuarioDTO {
     private String clave;
     private Usuario.Rol rol;
 
+    private String imagen;
+    private String nombreImagen;
+
     public UsuarioDTO() {
         this.correoElectronico = "";
         this.nombre = "";
@@ -34,6 +37,18 @@ public class UsuarioDTO {
         this.apellidos = apellidos;
         this.clave = clave;
         this.rol = rol;
+
+    }
+
+    public UsuarioDTO(String correoElectronico, String nombre, String apellidos, String clave, Usuario.Rol rol,
+            String imagen, String nombreimagen) {
+        this.correoElectronico = correoElectronico;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.clave = clave;
+        this.rol = rol;
+        this.imagen = imagen;
+        this.nombreImagen = nombreimagen;
 
     }
 
@@ -105,6 +120,34 @@ public class UsuarioDTO {
      */
     public void setClave(String clave) {
         this.clave = clave;
+    }
+
+    /**
+     * @return the imagen
+     */
+    public String getImagen() {
+        return imagen;
+    }
+
+    /**
+     * @param imagen the imagen to set
+     */
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
+    /**
+     * @return the nombreImagen
+     */
+    public String getNombreImagen() {
+        return nombreImagen;
+    }
+
+    /**
+     * @param nombreImagen the nombreImagen to set
+     */
+    public void setNombreImagen(String nombreImagen) {
+        this.nombreImagen = nombreImagen;
     }
 
 }

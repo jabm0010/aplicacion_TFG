@@ -9,6 +9,7 @@ org\ujaen\apptfg\Servidor\ServidorTerapias.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosPacienteREST.class
 org\ujaen\apptfg\Servidor\DAOs\EjercicioTerapeuticoDAO.class
 org\ujaen\apptfg\Servidor\Modelo\Paciente.class
+org\ujaen\apptfg\Servidor\DAOs\ImagenDAO.class
 org\ujaen\apptfg\Servidor\Utiils\Pagina.class
 org\ujaen\apptfg\Servidor\Servicios\InterfazServiciosPaciente.class
 org\ujaen\apptfg\Servidor\Modelo\Mensaje.class
@@ -17,6 +18,7 @@ org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosPublicosREST.class
 org\ujaen\apptfg\Servidor\Modelo\Usuario.class
 org\ujaen\apptfg\Servidor\DAOs\PacienteDAO.class
 org\ujaen\apptfg\Servidor\Modelo\Usuario$Rol.class
+org\ujaen\apptfg\Servidor\Modelo\Imagen.class
 org\ujaen\apptfg\Cliente\ClientePruebas.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosMedicoREST.class
 org\ujaen\apptfg\Servidor\DTOs\EjercicioTerapeuticoDTO.class
