@@ -6,7 +6,9 @@
 package org.ujaen.apptfg.Servidor.Modelo;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 
 /**
@@ -18,6 +20,9 @@ import org.ujaen.apptfg.Servidor.Entidades.Usuarios.Usuario;
 @Entity
 public class Paciente extends Usuario{
     private Usuario.Rol rol;
+    
+    @ManyToMany(mappedBy = "pacientes")
+    private List<Medico> medicos;
     
     public Paciente(){
         

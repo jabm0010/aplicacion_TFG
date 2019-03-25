@@ -15,39 +15,41 @@ import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosMedico;
  * @author Juan Antonio Béjar Martos
  */
 public class ClientePruebas {
+
     ApplicationContext context;
-    
-     public ClientePruebas(ApplicationContext context) {
+
+    public ClientePruebas(ApplicationContext context) {
         this.context = context;
     }
-     
-    public void run(){
-        
-        try{
-        System.out.println("Ejecutando cliente pruebas");
-        
-        InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
-        
-        serviciosMedico.pruebaImagen();
-        
-//        String correo = "jabm979@gmail.com";
-//        String nombre = "Pepe";
-//        String apellidos = "Martinez";
-//        String clave = "pwd";
-//        
-//        MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos,clave);
-//        
-//        serviciosMedico.registro(medicoDTO);
-//        
-//        EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO("Terapia espalda","abcdefg");
-//        EjercicioTerapeuticoDTO ejercicioTerapeutico2 = new EjercicioTerapeuticoDTO("Terapia pierna","abcdefg");
-//         
-//        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, correo);
-//        serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico2, correo);
-//        System.out.println("Ejercicio creado");
-        }catch(Exception e){
+
+    public void run() {
+
+        try {
+            System.out.println("Ejecutando cliente pruebas");
+
+            InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
+
+            for (int i = 0; i < 5; i++) {
+                String correo = "usuario" + i + "@gmail.com";
+                String nombre = "nombre" + i;
+                String apellidos = "apellidos" + i;
+                String clave = "clave" + i;
+                MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos, clave);
+                serviciosMedico.registro(medicoDTO);
+            }
+
+            for (int i = 0; i < 10; i++) {
+
+                String nombreEjercicio = "ejercicio" +i;
+                String descripcionEjercicio = "descripcion" +i;
+                EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO(nombreEjercicio, descripcionEjercicio);
+                serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, "usuario1@gmail.com");
+            }
+
+
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
     }
-    
+
 }

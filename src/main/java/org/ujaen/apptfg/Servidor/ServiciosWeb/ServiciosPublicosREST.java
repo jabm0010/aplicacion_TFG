@@ -35,6 +35,11 @@ public class ServiciosPublicosREST {
     @Autowired
     GestorMedico gestorMedico;
 
+    /**
+     * Servicio REST para registrar a un usuario
+     * @param usuario información del usuario a registrar
+     * @return ResponseEntity con código correspondiente
+     */
     @RequestMapping(value = "/usuarios", method = POST, consumes = "application/json")
     public ResponseEntity<Void> registroUsuario(@RequestBody UsuarioDTO usuario) {
 
@@ -61,5 +66,5 @@ public class ServiciosPublicosREST {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
 }

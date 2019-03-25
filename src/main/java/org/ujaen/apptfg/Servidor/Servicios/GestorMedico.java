@@ -14,11 +14,14 @@ import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.EjercicioTerapeuticoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
+import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
+import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 
 /**
  *
@@ -32,29 +35,42 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     @Autowired
     EjercicioTerapeuticoDAO ejercicioDAO;
-    
+
     @Autowired
     ImagenDAO imagenDAO;
+
+    @Autowired
+    PacienteDAO pacienteDAO;
 
     @Override
     public void registro(MedicoDTO medico) {
 
         Medico medicotmp = new Medico();
         medicotmp = medicotmp.medicoFromDTO(medico);
-        Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
-        
-        /*Problema con guardar imagen antes de registrar usuario:
-        Si ya existe un usuario registrado con el mismo correo, aunque se deniegue el registro del usuario
-        se seguirá guardando la imagen asociada a este.     
-        */
-        imagenDAO.guardarImagen(imagentmp);
-        
-        medicotmp.setImagenperfil(imagentmp);
-        
+
+        if (medico.getImagen() != null) {
+            Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
+
+            /*Problema con guardar imagen antes de registrar usuario:
+           Si ya existe un usuario registrado con el mismo correo, aunque se deniegue el registro del usuario
+           se seguirá guardando la imagen asociada a este.     
+          Posible solucion:   registrar -> asignar imagen -> actualizar usuario 
+             */
+            imagenDAO.guardarImagen(imagentmp);
+
+            medicotmp.setImagenperfil(imagentmp);
+        }
+
         medicoDAO.registrarUsuario(medicotmp);
 
     }
 
+    /**
+     * Método para crear un nuevo ejercicio terapéutico
+     *
+     * @param ejercicioTerapeuticoDTO información del ejercicio a crear
+     * @param medicoId identificador del médico que crea el ejercicio
+     */
     @Override
     public void crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO, String medicoId) {
         Medico medico = medicoDAO.buscarMedico(medicoId);
@@ -67,6 +83,12 @@ public class GestorMedico implements InterfazServiciosMedico {
         medicoDAO.actualizarMedico(medico);
     }
 
+    /**
+     * Devuelve un listado con los ejercicios terapéuticos creados por un médico
+     *
+     * @param medico identificador del médico
+     * @return
+     */
     @Override
     public List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medico) {
         Medico medicotmp = medicoDAO.buscarMedico(medico);
@@ -82,17 +104,75 @@ public class GestorMedico implements InterfazServiciosMedico {
         return ret_ejerciciosTerapeuticos;
     }
 
+    /**
+     * Método para guardar los cambios realizados en un ejercicio terapétuico ya
+     * existente
+     *
+     * @param ejercicioTerapeutico ejercicio terapéutico actualizado
+     * @param medico identificador del mñedico
+     */
     @Override
     public void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico) {
         Medico medicotmp = medicoDAO.buscarMedico(medico);
         EjercicioTerapeutico ejerciciotmp = new EjercicioTerapeutico();
         ejerciciotmp = ejerciciotmp.ejercicioTerapeuticoFromDTO(ejercicioTerapeutico);
         medicotmp.editarEjercicioTerapeutico(ejerciciotmp);
-        
+
         medicoDAO.actualizarMedico(medicotmp);
 
     }
 
-    
+    /**
+     * Obtiene el perfil de usuario asociado a la clave primaria de un médico
+     *
+     * @param medico identificador del médico
+     * @return
+     */
+    @Override
+    public MedicoDTO obtenerPerfilUsuario(String medico) {
+        Medico medicotmp = medicoDAO.buscarMedico(medico);
+        MedicoDTO retMedicoDTO = medicotmp.medicoToDTO();
+        if (medicotmp.getImagenperfil() != null) {
+            retMedicoDTO.setImagen(medicotmp.getImagenperfil().obtenerImagenBase64());
+            retMedicoDTO.setNombreImagen(medicotmp.getImagenperfil().getNombre());
+        }
+
+        return retMedicoDTO;
+
+    }
+
+    /**
+     * Obtiene la lista de pacientes de un médico
+     * @param medico identificador del médico que quiere acceder a su lista
+     * @return 
+     */
+    @Override
+    public List<PacienteDTO> obtenerPacientes(String medico) {
+        Medico medicotmp = medicoDAO.buscarMedico(medico);
+        List<PacienteDTO> listaPacientes = new ArrayList<>();
+        for (Paciente p : medicotmp.getPacientes()) {
+            listaPacientes.add(p.pacienteToDTO());
+        }
+        return listaPacientes;
+    }
+
+    /**
+     * 
+     * @param medico identificador del médico que quiere añadir un usuario
+     * @param paciente información del paciente que se quiere añadir a la lista
+     */
+    @Override
+    public void añadirPaciente(String medico, PacienteDTO paciente) {
+        Medico medicotmp = medicoDAO.buscarMedico(medico);
+
+        Paciente pacientetmp = new Paciente();
+        pacientetmp = pacientetmp.pacienteFromDTO(paciente);
+        if (!pacienteDAO.existePaciente(paciente.getCorreoElectronico())) {
+            pacienteDAO.registrarUsuario(pacientetmp);
+        }
+        medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(paciente.getCorreoElectronico()));
+        medicoDAO.actualizarMedico(medicotmp);
+
+    }
 
 }

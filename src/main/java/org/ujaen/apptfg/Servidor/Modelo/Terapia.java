@@ -18,20 +18,21 @@ import java.util.Map;
  */
 public class Terapia {
     
+    
     private LocalDateTime fechaCreacion;
     
     private List<LocalDate> fechas;
     
     private Map<EjercicioTerapeutico, Integer> ejerciciosTerapia;
     
-    private Chat chatTerapia;
+  
     
     
     public Terapia(){
         this.fechaCreacion = LocalDateTime.now();
         this.fechas = new ArrayList<>();
         this.ejerciciosTerapia = new HashMap<>();
-        this.chatTerapia = new Chat();
+       
     }
     
     
@@ -76,18 +77,6 @@ public class Terapia {
         this.ejerciciosTerapia = ejerciciosTerapia;
     }
 
-    /**
-     * @return the chatTerapia
-     */
-    public Chat getChatTerapia() {
-        return chatTerapia;
-    }
 
-    /**
-     * @param chatTerapia the chatTerapia to set
-     */
-    public void setChatTerapia(Chat chatTerapia) {
-        this.chatTerapia = chatTerapia;
-    }
     
 }

@@ -8,6 +8,7 @@ package org.ujaen.apptfg.Servidor.Servicios;
 import java.util.List;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 
 /**
  *
@@ -23,7 +24,11 @@ public interface InterfazServiciosMedico {
     
     void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
     
+    List<PacienteDTO> obtenerPacientes(String medico);
     
+    void añadirPaciente(String medico, PacienteDTO paciente);
+    
+    MedicoDTO obtenerPerfilUsuario(String medico);
     
     
 }

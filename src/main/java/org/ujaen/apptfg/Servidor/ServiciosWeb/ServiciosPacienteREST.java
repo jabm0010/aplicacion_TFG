@@ -29,9 +29,5 @@ public class ServiciosPacienteREST {
 
 
 
-    @RequestMapping(value = "/paciente", method = POST, consumes = "application/json")
-    public boolean registrar(@RequestBody PacienteDTO paciente) {
-        gestorPaciente.registro(paciente);
-        return true;
-    }
+
 }

@@ -86,36 +86,18 @@ public class Imagen implements Serializable {
         }
         return null;
     }
+    
+    /**
+     * Devuelve una representación en base64 del array de bytes con el contenido de la imagen.
+     * @return 
+     */
+    public String obtenerImagenBase64(){
+        String imagenBase64 = Base64.encodeBase64String(imagen);
+        return imagenBase64;
+        
+    }
+    
 
-//    public Imagen retImagen(String path) {
-//        try (FileOutputStream stream = new FileOutputStream(path)) {
-//            stream.write(b);
-//        }
-//    }
-//    public Imagen crearImagen(File fichero) {
-//        try {
-//            byte[] imagenLeida = Files.readAllBytes(fichero.toPath());
-//            this.imagen = imagenLeida;
-//            return this;
-//        } catch (IOException e) {
-//
-//        }
-//        return null;
-//    }
-//
-//    public void nuevaImagen() {
-//        try {
-//            leerImagen(this.imagen, "C:\\Users\\jabm9\\Desktop\\TFG" + "\\pruebaNuva.jpg");
-//            System.out.println("ee");
-//        } catch (IOException e) {
-//        }
-//    }
-//
-//    private static void leerImagen(byte[] b, String path) throws FileNotFoundException, IOException {
-//        try (FileOutputStream stream = new FileOutputStream(path)) {
-//            stream.write(b);
-//        }
-//    }
     /**
      * @return the id
      */
