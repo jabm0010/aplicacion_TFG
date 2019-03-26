@@ -8,6 +8,7 @@ package org.ujaen.apptfg.Cliente;
 import org.springframework.context.ApplicationContext;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosMedico;
 
 /**
@@ -34,7 +35,8 @@ public class ClientePruebas {
                 String nombre = "nombre" + i;
                 String apellidos = "apellidos" + i;
                 String clave = "clave" + i;
-                MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos, clave);
+                Medico.versionCuenta v = Medico.versionCuenta.BASICA;
+                MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos, clave, v);
                 serviciosMedico.registro(medicoDTO);
             }
 

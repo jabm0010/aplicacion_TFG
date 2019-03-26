@@ -31,6 +31,13 @@ public class UsuarioDTO {
 
     }
 
+    public UsuarioDTO(String correoElectronico, String nombre, String apellidos, Usuario.Rol rol) {
+        this.correoElectronico = correoElectronico;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.rol = rol;
+    }
+
     public UsuarioDTO(String correoElectronico, String nombre, String apellidos, String clave, Usuario.Rol rol) {
         this.correoElectronico = correoElectronico;
         this.nombre = nombre;

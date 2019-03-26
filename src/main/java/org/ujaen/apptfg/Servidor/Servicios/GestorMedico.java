@@ -46,7 +46,7 @@ public class GestorMedico implements InterfazServiciosMedico {
     public void registro(MedicoDTO medico) {
 
         Medico medicotmp = new Medico();
-        medicotmp = medicotmp.medicoFromDTO(medico);
+        medicotmp = Medico.medicoFromDTO(medico);
 
         if (medico.getImagen() != null) {
             Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
@@ -173,6 +173,11 @@ public class GestorMedico implements InterfazServiciosMedico {
         medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(paciente.getCorreoElectronico()));
         medicoDAO.actualizarMedico(medicotmp);
 
+    }
+
+    @Override
+    public void configurarPerfil(MedicoDTO medico) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

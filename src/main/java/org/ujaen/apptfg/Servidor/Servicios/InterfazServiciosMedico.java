@@ -18,6 +18,8 @@ public interface InterfazServiciosMedico {
     
     void registro(MedicoDTO medico);
     
+    void configurarPerfil(MedicoDTO medico);
+    
     void crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
     
     List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medico);

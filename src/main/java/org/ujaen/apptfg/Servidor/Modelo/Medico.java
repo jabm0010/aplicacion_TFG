@@ -16,15 +16,26 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import org.hibernate.annotations.Cascade;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.Excepciones.MaximoPacientesAlcanzado;
 import org.ujaen.apptfg.Servidor.Excepciones.PacienteYaAñadido;
 
 /**
  * @author Juan Antonio Béjar Martos
  */
+
+
+
 @Entity
 public class Medico extends Usuario {
+    public enum versionCuenta {
+        BASICA,
+        PREMIUM
+    }
+    
+    public static int NUMERO_MAXIMO_PACIENTES = 100;
 
     private Usuario.Rol rol;
+    private versionCuenta versionCuenta;
 
     @OneToMany(cascade = CascadeType.ALL)
     private Map<Long, EjercicioTerapeutico> ejerciciosCreados;
@@ -49,13 +60,14 @@ public class Medico extends Usuario {
      * @param nombre nombre del médico
      * @param apellidos apellidos del médico
      * @param clave contraseña a utilizar
+     * @param versionCuenta versión de la cuenta del médico
      */
-    public Medico(String correoElectronico, String nombre, String apellidos, String clave) {
+    public Medico(String correoElectronico, String nombre, String apellidos, String clave, versionCuenta versionCuenta) {
         super(correoElectronico, nombre, apellidos, clave);
         this.rol = Usuario.Rol.MEDICO;
         ejerciciosCreados = new HashMap<>();
         pacientes = new ArrayList<>();
-
+        this.versionCuenta = versionCuenta;
     }
 
     /**
@@ -81,12 +93,18 @@ public class Medico extends Usuario {
         ejerciciosCreados.put(ejercicio.getId(), tmp);
 
     }
+
     /**
      * Método para añadir un nuevo paciente a la lista de pacientes del médico.
      * 
-     * @param paciente 
+     * @param paciente
      */
     public void añadirPaciente(Paciente paciente) {
+        if(this.pacientes.size() == NUMERO_MAXIMO_PACIENTES){
+            throw new MaximoPacientesAlcanzado();
+        }
+        
+        
         if (!pacientes.contains(paciente)) {
             pacientes.add(paciente);
         } else {
@@ -97,13 +115,13 @@ public class Medico extends Usuario {
 
     public MedicoDTO medicoToDTO() {
         MedicoDTO medicoDTO = new MedicoDTO(super.getCorreoElectronico(),
-                super.getNombre(), super.getApellidos(), super.getClave());
+                super.getNombre(), super.getApellidos(), super.getClave(),this.versionCuenta);
         return medicoDTO;
     }
 
-    public Medico medicoFromDTO(MedicoDTO medicoDTO) {
+    public static Medico medicoFromDTO(MedicoDTO medicoDTO) {
         Medico medico = new Medico(medicoDTO.getCorreoElectronico(), medicoDTO.getNombre(),
-                medicoDTO.getApellidos(), medicoDTO.getClave());
+                medicoDTO.getApellidos(), medicoDTO.getClave(),medicoDTO.getVersionCuenta());
         return medico;
     }
 
@@ -126,6 +144,20 @@ public class Medico extends Usuario {
      */
     public List<Paciente> getPacientes() {
         return pacientes;
+    }
+
+    /**
+     * @return the versionCuenta
+     */
+    public versionCuenta getVersionCuenta() {
+        return versionCuenta;
+    }
+
+    /**
+     * @param versionCuenta the versionCuenta to set
+     */
+    public void setVersionCuenta(versionCuenta versionCuenta) {
+        this.versionCuenta = versionCuenta;
     }
 
 }
