@@ -5,10 +5,13 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
+import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 
 /**
  *
@@ -32,5 +35,6 @@ public interface InterfazServiciosMedico {
     
     MedicoDTO obtenerPerfilUsuario(String medico);
     
+    void asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t);
     
 }

@@ -44,5 +44,11 @@ public class PacienteDAO {
        
         return em.find(Paciente.class,id) != null;
     }
+    
+        @Transactional
+    public void actualizarPaciente(Paciente p){
+
+        em.merge(p);
+    }
 
 }

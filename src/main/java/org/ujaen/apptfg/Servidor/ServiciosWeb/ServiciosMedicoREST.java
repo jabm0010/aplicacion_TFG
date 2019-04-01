@@ -5,7 +5,9 @@
  */
 package org.ujaen.apptfg.Servidor.ServiciosWeb;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
+import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 import org.ujaen.apptfg.Servidor.Utiils.Pagina;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  *
@@ -38,7 +42,7 @@ public class ServiciosMedicoREST {
     GestorMedico gestorMedico;
 
     /**
-     * Servicio REST para crear un ejercicio terapéutico
+     * Implementación ervicio REST para crear un ejercicio terapéutico
      *
      * @param medico id identificador del médico
      * @param ejercicio información del ejercicio a crear
@@ -65,8 +69,7 @@ public class ServiciosMedicoREST {
     }
 
     /**
-     * Servicio REST para obtener los ejercicios terapéuticos en formato
-     * paginado
+     * Implementación servicio REST para obtener ejercicios terapéuticos
      *
      * @param medico id identificador del médico
      * @param page página que se quiere recuperar
@@ -91,7 +94,7 @@ public class ServiciosMedicoREST {
     }
 
     /**
-     * Servicio REST para obtener ejercicios terapéuticos
+     * Implementación servicio REST para obtener ejercicios terapéuticos
      *
      * @param medico id identificador del médico
      * @return ResponseEntity con código correspondiente
@@ -111,7 +114,7 @@ public class ServiciosMedicoREST {
     }
 
     /**
-     * Servicio REST para modificar un ejercicio terapéutico
+     * Implementación servicio REST para actualizar un ejercicio terapéutico
      *
      * @param medico id identificador del médico
      * @param ejercicio información del ejercicio a modificar
@@ -138,7 +141,7 @@ public class ServiciosMedicoREST {
     }
 
     /**
-     * Servicio REST para obtener la información de un médico
+     * Implementación servicio REST para obtener el perfil de un médico
      *
      * @param medico id identificador del médico
      * @return ResponseEntity con código correspondiente
@@ -158,6 +161,14 @@ public class ServiciosMedicoREST {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Implementación servicio REST para obtener los pacientes asociados a un
+     * médico
+     *
+     * @param medico identificador del médico que quiere acceder a la lista de
+     * pacientes
+     * @return
+     */
     @RequestMapping(value = "/{medico}/pacientes", method = GET, produces = "application/json")
     public ResponseEntity<List<PacienteDTO>> obtenerListaPacientes(
             @PathVariable String medico) {
@@ -168,18 +179,50 @@ public class ServiciosMedicoREST {
         return new ResponseEntity<>(pacientes, HttpStatus.OK);
 
     }
-    
+
+    /**
+     * Implementación servicio REST para añadir un nuevo paciente a la lista de
+     * un médico
+     *
+     * @param medico identificador del médico que quiere acceder a la lista de
+     * pacientes
+     * @param paciente información del paciente a agregar
+     * @return
+     */
     @RequestMapping(value = "/{medico}/pacientes", method = POST, consumes = "application/json")
     public ResponseEntity<Void> añadirPaciente(
             @PathVariable String medico,
             @RequestBody PacienteDTO paciente) {
-        try{
+        try {
             gestorMedico.añadirPaciente(medico, paciente);
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+
+    /**
+     * Implementación servicio REST para asignar terapias a un paciente
+     *
+     * @param medico identificador del médico que asigna la terapia
+     * @param paciente paciente al que se asigna la terapia
+     * @param t contenido de la terapia asignada
+     * @return
+     */
+    @RequestMapping(value = "/{medico}/terapias/{paciente}", method = POST, consumes = "application/json")
+    public ResponseEntity<Void> asignarTerapia(@PathVariable String medico,
+            @PathVariable String paciente,
+            @RequestBody TerapiaDTO t) {
+
+        try {
+
+            gestorMedico.asignarTerapia(paciente, medico, t);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

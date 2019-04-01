@@ -18,6 +18,22 @@ public class PacienteDTO extends UsuarioDTO {
         super.setRol(Usuario.Rol.PACIENTE);
     }
 
+    /**
+     * Constructor DTO pensado para la creación de un nuevo paciente por parte de un médico.
+     * El médico únicamente introduce los parámetros de correo electrónico, nombre y apellidos,
+     * el resto serán posteriormente configurados por el propio paciente.
+     * @param correoElectronico
+     * @param nombre
+     * @param apellidos 
+     */
+    public PacienteDTO(String correoElectronico, String nombre, String apellidos){
+        super.setCorreoElectronico(correoElectronico);
+        super.setNombre(nombre);
+        super.setApellidos(apellidos);
+    }
+    
+    
+    
     public PacienteDTO(String correoElectronico, String nombre, String apellidos, String clave) {
         super(correoElectronico, nombre, apellidos, clave, Usuario.Rol.PACIENTE);
 

@@ -5,8 +5,12 @@ org\ujaen\apptfg\Servidor\Modelo\Chat.class
 org\ujaen\apptfg\Servidor\DAOs\MedicoDAO.class
 org\ujaen\apptfg\Servidor\Excepciones\ExcepcionUsuarioRegistrado.class
 org\ujaen\apptfg\Servidor\DTOs\MedicoDTO.class
+org\ujaen\apptfg\Servidor\DTOs\TerapiaDTO.class
+org\ujaen\apptfg\Servidor\DAOs\TerapiaDAO.class
+org\ujaen\apptfg\Servidor\Modelo\InfoEjerciciosTerapia.class
 org\ujaen\apptfg\Servidor\DTOs\PacienteDTO.class
 org\ujaen\apptfg\Servidor\ServidorTerapias.class
+org\ujaen\apptfg\Servidor\Excepciones\UsuarioNoRegistrado.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosPacienteREST.class
 org\ujaen\apptfg\Servidor\Servicios\GestorAdministrador.class
 org\ujaen\apptfg\Servidor\DAOs\EjercicioTerapeuticoDAO.class
@@ -22,7 +26,9 @@ org\ujaen\apptfg\Servidor\Modelo\Usuario.class
 org\ujaen\apptfg\Servidor\DAOs\PacienteDAO.class
 org\ujaen\apptfg\Servidor\Modelo\Usuario$Rol.class
 org\ujaen\apptfg\Servidor\Utiils\ServicioCorreo.class
+org\ujaen\apptfg\Servidor\Excepciones\EjerciciosNoValidos.class
 org\ujaen\apptfg\Servidor\Modelo\Imagen.class
+org\ujaen\apptfg\Servidor\Modelo\Medico$versionCuenta.class
 org\ujaen\apptfg\Cliente\ClientePruebas.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosMedicoREST.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosAdminREST.class
@@ -30,4 +36,5 @@ org\ujaen\apptfg\Servidor\DTOs\EjercicioTerapeuticoDTO.class
 org\ujaen\apptfg\Servidor\DTOs\UsuarioDTO.class
 org\ujaen\apptfg\Servidor\Servicios\GestorMedico.class
 org\ujaen\apptfg\Servidor\Modelo\EjercicioTerapeutico.class
+org\ujaen\apptfg\Servidor\Excepciones\MaximoPacientesAlcanzado.class
 org\ujaen\apptfg\Servidor\Servicios\GestorPaciente.class

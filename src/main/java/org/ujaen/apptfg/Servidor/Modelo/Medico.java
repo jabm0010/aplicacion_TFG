@@ -6,32 +6,35 @@
 package org.ujaen.apptfg.Servidor.Modelo;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import org.hibernate.annotations.Cascade;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
 import org.ujaen.apptfg.Servidor.Excepciones.MaximoPacientesAlcanzado;
 import org.ujaen.apptfg.Servidor.Excepciones.PacienteYaAñadido;
 
 /**
  * @author Juan Antonio Béjar Martos
  */
-
-
-
 @Entity
 public class Medico extends Usuario {
+
     public enum versionCuenta {
         BASICA,
         PREMIUM
     }
-    
+
     public static int NUMERO_MAXIMO_PACIENTES = 100;
 
     private Usuario.Rol rol;
@@ -41,7 +44,10 @@ public class Medico extends Usuario {
     private Map<Long, EjercicioTerapeutico> ejerciciosCreados;
 
     @ManyToMany
-    private List<Paciente> pacientes;
+    private Map<String, Paciente> pacientes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Terapia> listaTerapias;
 
     /**
      * Constructor por defecto de la clase médico
@@ -50,7 +56,7 @@ public class Medico extends Usuario {
         super();
         this.rol = Usuario.Rol.MEDICO;
         ejerciciosCreados = new HashMap<>();
-        pacientes = new ArrayList<>();
+        pacientes = new HashMap<>();
     }
 
     /**
@@ -66,7 +72,7 @@ public class Medico extends Usuario {
         super(correoElectronico, nombre, apellidos, clave);
         this.rol = Usuario.Rol.MEDICO;
         ejerciciosCreados = new HashMap<>();
-        pacientes = new ArrayList<>();
+        pacientes = new HashMap<>();
         this.versionCuenta = versionCuenta;
     }
 
@@ -96,32 +102,102 @@ public class Medico extends Usuario {
 
     /**
      * Método para añadir un nuevo paciente a la lista de pacientes del médico.
-     * 
+     *
      * @param paciente
      */
     public void añadirPaciente(Paciente paciente) {
-        if(this.pacientes.size() == NUMERO_MAXIMO_PACIENTES){
+        if (this.pacientes.size() == NUMERO_MAXIMO_PACIENTES) {
             throw new MaximoPacientesAlcanzado();
         }
-        
-        
-        if (!pacientes.contains(paciente)) {
-            pacientes.add(paciente);
+
+        if (!pacientes.containsKey(paciente.getCorreoElectronico())) {
+            pacientes.put(paciente.getCorreoElectronico(), paciente);
         } else {
             throw new PacienteYaAñadido();
         }
 
     }
 
+    
+    /**
+     * Método para crear una nueva terapia
+     * @param ejercicios lista con objetos de tipo InfoEjerciciosTerapia que contiene el código del ejercicio
+     * y su duración
+     * @param fechasTerapia listado de fechas en los que se ha de realizar la terapia
+     * @param comentarios comentarios de terapia
+     */
+    public Terapia crearTerapia(List<InfoEjerciciosTerapia> ejercicios,
+            List<LocalDate> fechasTerapia, String comentarios) {
+        Terapia t = new Terapia();
+        t.setFechas(fechasTerapia);
+        t.setComentarios(comentarios);
+
+        try {
+            List<EjercicioTerapeutico> listadoEjercicios = obtenerEjercicios(ejercicios);
+            t.setListaEjercicios(listadoEjercicios);
+            t.setDuracionesEjercicios(ejercicios);
+
+        } catch (RuntimeException e) {
+            e.toString();
+        }
+        listaTerapias.add(t);
+        return t;
+    }
+
+    /**
+     * Método para crear una nueva terapia y asignarla a un paciente
+     *
+     * @param identificadorPaciente identificador del paciente al que se
+     * asignará la terapia
+
+     */
+    public void asignarTerapia(String identificadorPaciente, Terapia t) {
+
+        Paciente p = new Paciente();
+        try {
+            p = pacientes.get(identificadorPaciente);
+        } catch (RuntimeException e) {
+            e.toString();
+        }
+        
+
+        p.getTerapiasPaciente().add(t);
+  
+
+    }
+
+    /**
+     * Metodo interno que devuelve los ejercicios asociados a los códigos
+     * pasados. En caso de que alguno de los códigos no exista se lanza una
+     * excepción EjerciciosNoValidos
+     *
+     * @param ejercicios listado de códigos de ejercicios que se quiere
+     * comprobar
+     * @return
+     */
+    private List<EjercicioTerapeutico> obtenerEjercicios(List<InfoEjerciciosTerapia> ejercicios) {
+        List<EjercicioTerapeutico> listaEjercicios = new ArrayList<>();
+
+        for (InfoEjerciciosTerapia e : ejercicios) {
+            if (ejerciciosCreados.containsKey(e.getCodigoEjercicio())) {
+                listaEjercicios.add(ejerciciosCreados.get(e.getCodigoEjercicio()));
+            } else {
+                throw new EjerciciosNoValidos();
+            }
+        }
+
+        return listaEjercicios;
+    }
+
     public MedicoDTO medicoToDTO() {
         MedicoDTO medicoDTO = new MedicoDTO(super.getCorreoElectronico(),
-                super.getNombre(), super.getApellidos(), super.getClave(),this.versionCuenta);
+                super.getNombre(), super.getApellidos(), super.getClave(), this.versionCuenta);
         return medicoDTO;
     }
 
     public static Medico medicoFromDTO(MedicoDTO medicoDTO) {
         Medico medico = new Medico(medicoDTO.getCorreoElectronico(), medicoDTO.getNombre(),
-                medicoDTO.getApellidos(), medicoDTO.getClave(),medicoDTO.getVersionCuenta());
+                medicoDTO.getApellidos(), medicoDTO.getClave(), medicoDTO.getVersionCuenta());
         return medico;
     }
 
@@ -142,7 +218,7 @@ public class Medico extends Usuario {
     /**
      * @return the pacientes
      */
-    public List<Paciente> getPacientes() {
+    public Map<String, Paciente> getPacientes() {
         return pacientes;
     }
 

@@ -6,8 +6,10 @@
 package org.ujaen.apptfg.Servidor.Servicios;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,10 +20,12 @@ import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
+import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
+import org.ujaen.apptfg.Servidor.Modelo.Terapia;
 
 /**
  *
@@ -143,21 +147,28 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     /**
      * Obtiene la lista de pacientes de un médico
+     *
      * @param medico identificador del médico que quiere acceder a su lista
-     * @return 
+     * @return
      */
     @Override
     public List<PacienteDTO> obtenerPacientes(String medico) {
         Medico medicotmp = medicoDAO.buscarMedico(medico);
-        List<PacienteDTO> listaPacientes = new ArrayList<>();
-        for (Paciente p : medicotmp.getPacientes()) {
-            listaPacientes.add(p.pacienteToDTO());
-        }
-        return listaPacientes;
+
+        List<PacienteDTO> ret_pacientes = new ArrayList<>();
+        List<Paciente> pacientesSource;
+        pacientesSource = new ArrayList<>(medicotmp.getPacientes().values());
+
+        pacientesSource.forEach((p) -> {
+            ret_pacientes.add(p.pacienteToDTO());
+        });
+
+        return ret_pacientes;
+
     }
 
     /**
-     * 
+     *
      * @param medico identificador del médico que quiere añadir un usuario
      * @param paciente información del paciente que se quiere añadir a la lista
      */
@@ -178,6 +189,28 @@ public class GestorMedico implements InterfazServiciosMedico {
     @Override
     public void configurarPerfil(MedicoDTO medico) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
+    /**
+     * Servicio para que un médico asigne una terapia a uno de sus pacientes
+     * @param identificadorPaciente clave del paciente al que se va a asignar la terapia
+     * @param t contenido de la terapia
+     * @param medico clave del médico que asigna la terapia
+     */
+    @Override
+    public void asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t) {
+
+        Medico m = medicoDAO.buscarMedico(medico);
+        Terapia terapia = new Terapia();
+        terapia =m.crearTerapia(t.getEjerciciosTerapia(), t.getFechas(),t.getComentarios());
+        medicoDAO.actualizarMedico(m);
+        //m.asignarTerapia(identificadorPaciente, t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
+        Paciente p = pacienteDAO.buscarPaciente(identificadorPaciente);
+        p.nuevaTerapia(terapia);
+        pacienteDAO.actualizarPaciente(p);
+        
+ 
     }
 
 }
