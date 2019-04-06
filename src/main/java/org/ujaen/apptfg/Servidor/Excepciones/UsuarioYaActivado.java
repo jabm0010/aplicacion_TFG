@@ -9,9 +9,9 @@ package org.ujaen.apptfg.Servidor.Excepciones;
  *
  * @author Juan Antonio Béjar Martos
  */
-public class EjerciciosNoValidos extends RuntimeException {
+public class UsuarioYaActivado extends RuntimeException {
 
-    public EjerciciosNoValidos() {
-        super("Ha habido un fallo con los ejercicios");
+    public UsuarioYaActivado() {
+        super("Esta cuenta de usuario ya ha sido activada");
     }
 }

@@ -37,7 +37,8 @@ public class ClientePruebas {
                 String clave = "clave" + i;
                 Medico.versionCuenta v = Medico.versionCuenta.BASICA;
                 MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos, clave, v);
-                serviciosMedico.registro(medicoDTO);
+                
+                serviciosMedico.registroPruebas(medicoDTO);
             }
 
             for (int i = 0; i < 10; i++) {

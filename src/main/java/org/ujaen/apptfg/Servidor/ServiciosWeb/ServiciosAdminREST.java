@@ -33,55 +33,52 @@ public class ServiciosAdminREST {
     GestorAdministrador gestorAdministrador;
 
     /**
-     * Servicio utilizado por un administrador del sistema para dar de alta a un nuevo médico
+     * Servicio utilizado por un administrador del sistema para dar de alta a un
+     * nuevo médico
+     *
      * @param medico
-     * @return ResponseEntity CONFLICT en caso de error, OK en caso de que se haya realizado el registro
-     * correctamente
+     * @return ResponseEntity CONFLICT en caso de error, OK en caso de que se
+     * haya realizado el registro correctamente
      */
     @RequestMapping(value = "/administrador/medicos", method = POST, consumes = "application/json")
     public ResponseEntity<Void> registroMedico(@RequestBody MedicoDTO medico) {
-        try {
-           
 
-            gestorAdministrador.registro(medico);
-        } catch (RuntimeException e) {
+        if (gestorAdministrador.registro(medico)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     /**
-     * Servicio utilizado para un administrador para buscar un médico a partir de su correo
+     * Servicio utilizado para un administrador para buscar un médico a partir
+     * de su correo
+     *
      * @param medico
-     * @return 
+     * @return
      */
     @RequestMapping(value = "/administrador/medicos/{medico}", method = GET, produces = "application/json")
     public ResponseEntity<MedicoDTO> obtenerMedico(@PathVariable String medico) {
         try {
-          
+
             MedicoDTO tmp = gestorAdministrador.obtenerMedico(medico);
-            return new ResponseEntity<>(tmp,HttpStatus.OK);
+            return new ResponseEntity<>(tmp, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        
     }
-    
+
     @RequestMapping(value = "/administrador/medicos", method = PUT, consumes = "application/json")
     public ResponseEntity<Void> modificarMedico(@RequestBody MedicoDTO medico) {
         try {
-          
+
             gestorAdministrador.modificarMedico(medico);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        
     }
-
-    
 
 }

@@ -18,28 +18,31 @@ import org.ujaen.apptfg.Servidor.Modelo.Paciente;
  * @author Juan Antonio Béjar Martos
  */
 @Component
-public class GestorPaciente implements InterfazServiciosPaciente{
+public class GestorPaciente implements InterfazServiciosPaciente {
+
     @Autowired
     PacienteDAO pacienteDAO;
-    
+
     @Autowired
     ImagenDAO imagenDAO;
 
-
-
     @Override
-    public void registro(PacienteDTO paciente) {
+    public boolean registro(PacienteDTO paciente) {
+        Paciente pacienteRegistro = new Paciente();
 
-        Paciente pacientetmp = new Paciente();
-        pacientetmp = pacientetmp.pacienteFromDTO(paciente);
-        
-         Imagen imagentmp = new Imagen(paciente.getImagen(), paciente.getNombreImagen());
-         
-        imagenDAO.guardarImagen(imagentmp);
-        
-        pacientetmp.setImagenperfil(imagentmp);
-        pacienteDAO.registrarUsuario(pacientetmp);
-        
+        try {
+            pacienteRegistro = pacienteDAO.buscarPaciente(paciente.getCorreoElectronico());
+            Imagen imagentmp = new Imagen(paciente.getImagen(), paciente.getNombreImagen());
+            imagenDAO.guardarImagen(imagentmp);
+            pacienteRegistro.setImagenperfil(imagentmp);
+            pacienteRegistro.setClave(paciente.getClave());
+            pacienteRegistro.setActivado(true);
+            pacienteDAO.actualizarPaciente(pacienteRegistro);
+        } catch (Exception e) {
+            imagenDAO.borrarImagen(pacienteRegistro.getImagenperfil().getId());
+            return false;
+        }
 
+        return true;
     }
 }

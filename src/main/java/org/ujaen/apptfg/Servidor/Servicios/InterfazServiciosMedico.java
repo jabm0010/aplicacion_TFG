@@ -19,11 +19,11 @@ import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
  */
 public interface InterfazServiciosMedico {
     
-    void registro(MedicoDTO medico);
+    boolean registro(MedicoDTO medico);
     
     void configurarPerfil(MedicoDTO medico);
     
-    void crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
+    boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
     
     List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medico);
     
@@ -31,10 +31,13 @@ public interface InterfazServiciosMedico {
     
     List<PacienteDTO> obtenerPacientes(String medico);
     
-    void añadirPaciente(String medico, PacienteDTO paciente);
+    boolean añadirPaciente(String medico, PacienteDTO paciente);
     
     MedicoDTO obtenerPerfilUsuario(String medico);
     
     void asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t);
+    
+    
+    void registroPruebas(MedicoDTO medico);
     
 }

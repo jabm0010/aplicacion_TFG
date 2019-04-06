@@ -31,21 +31,23 @@ public class MedicoDAO {
         } catch (RuntimeException ex) {
             throw new ExcepcionUsuarioRegistrado();
         }
-
-      
     }
-    
+
     @Transactional
     public Medico buscarMedico(String correoElectronico) {
-         Medico medico = em.find(Medico.class, correoElectronico); 
-         return medico;
-        
+        Medico medico = em.find(Medico.class, correoElectronico);
+        return medico;
     }
-    
-    @Transactional
-    public void actualizarMedico(Medico medico){
 
+    @Transactional
+    public void actualizarMedico(Medico medico) {
         em.merge(medico);
     }
-    
+
+    @Transactional
+    public void borrarMedico(String correoElectronico) {
+        Medico medico = em.find(Medico.class, correoElectronico);
+        em.remove(medico);
+    }
+
 }

@@ -13,7 +13,7 @@ import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
  */
 public interface InterfazServiciosAdministrador {
     
-      void registro(MedicoDTO medico);
+      boolean registro(MedicoDTO medico);
       
       MedicoDTO obtenerMedico(String medico);
       

@@ -53,18 +53,11 @@ public class ServiciosMedicoREST {
             @PathVariable String medico,
             @RequestBody EjercicioTerapeuticoDTO ejercicio) {
 
-        if (ejercicio.getTitulo().trim().isEmpty() || ejercicio.getTitulo().trim().isEmpty()) {
+        if (!gestorMedico.crearEjercicioTerapeutico(ejercicio, medico)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } else {
-            try {
-                gestorMedico.crearEjercicioTerapeutico(ejercicio, medico);
-                return new ResponseEntity<>(HttpStatus.CREATED);
-
-            } catch (RuntimeException e) {
-                //System.out.println(e.toString());
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
         }
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
 
@@ -193,12 +186,14 @@ public class ServiciosMedicoREST {
     public ResponseEntity<Void> añadirPaciente(
             @PathVariable String medico,
             @RequestBody PacienteDTO paciente) {
-        try {
-            gestorMedico.añadirPaciente(medico, paciente);
-        } catch (Exception e) {
+
+        if (gestorMedico.añadirPaciente(medico, paciente)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+
+  
 
     }
 

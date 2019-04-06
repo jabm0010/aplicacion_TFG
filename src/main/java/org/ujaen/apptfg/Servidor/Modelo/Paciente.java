@@ -22,7 +22,7 @@ import org.ujaen.apptfg.Servidor.Entidades.Usuarios.Usuario;
  */
 @Entity
 public class Paciente extends Usuario{
-    private Usuario.Rol rol;
+
     
     @ManyToMany(mappedBy = "pacientes")
     private List<Medico> medicos;
@@ -40,7 +40,7 @@ public class Paciente extends Usuario{
     
     public Paciente(String correoElectronico, String nombre, String apellidos, String clave){
         super(correoElectronico, nombre, apellidos, clave);
-        this.rol = Usuario.Rol.PACIENTE;
+        super.setRol(Rol.PACIENTE);
         this.medicos = new ArrayList<>();
         this.terapiasPaciente = new ArrayList<>();
     }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.EjercicioTerapeuticoDAO;
@@ -21,11 +22,14 @@ import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
+import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
+import org.ujaen.apptfg.Servidor.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 import org.ujaen.apptfg.Servidor.Modelo.Terapia;
+import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
 
 /**
  *
@@ -46,26 +50,37 @@ public class GestorMedico implements InterfazServiciosMedico {
     @Autowired
     PacienteDAO pacienteDAO;
 
+    @Autowired
+    GestionRegistro gestionRegistro;
+
+    /**
+     *
+     * @param medico
+     * @return
+     */
     @Override
-    public void registro(MedicoDTO medico) {
+    public boolean registro(MedicoDTO medico) {
 
-        Medico medicotmp = new Medico();
-        medicotmp = Medico.medicoFromDTO(medico);
+        Medico medicoRegistro = new Medico();
 
-        if (medico.getImagen() != null) {
-            Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
-
-            /*Problema con guardar imagen antes de registrar usuario:
-           Si ya existe un usuario registrado con el mismo correo, aunque se deniegue el registro del usuario
-           se seguirá guardando la imagen asociada a este.     
-          Posible solucion:   registrar -> asignar imagen -> actualizar usuario 
-             */
-            imagenDAO.guardarImagen(imagentmp);
-
-            medicotmp.setImagenperfil(imagentmp);
+        try {
+            medicoRegistro = medicoDAO.buscarMedico(medico.getCorreoElectronico());
+            if (medico.getImagen() != null) {
+                Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
+                imagenDAO.guardarImagen(imagentmp);
+                medicoRegistro.setImagenperfil(imagentmp);
+            }
+            medicoRegistro.setClave(medico.getClave());
+            medicoRegistro.setActivado(true);
+            medicoDAO.actualizarMedico(medicoRegistro);
+        } catch (Exception e) {
+            if (medico.getImagen() != null) {
+                imagenDAO.borrarImagen(medicoRegistro.getImagenperfil().getId());
+            }
+            return false;
         }
 
-        medicoDAO.registrarUsuario(medicotmp);
+        return true;
 
     }
 
@@ -76,15 +91,28 @@ public class GestorMedico implements InterfazServiciosMedico {
      * @param medicoId identificador del médico que crea el ejercicio
      */
     @Override
-    public void crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO, String medicoId) {
-        Medico medico = medicoDAO.buscarMedico(medicoId);
+    public boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO, String medicoId) {
 
-        EjercicioTerapeutico ejercicioTerapeutico = new EjercicioTerapeutico();
-        ejercicioTerapeutico = ejercicioTerapeutico.ejercicioTerapeuticoFromDTO(ejercicioTerapeuticoDTO);
-        ejercicioDAO.crearEjercicioTerapeutic(ejercicioTerapeutico);
-        medico.crearEjercicioTerapeutico(ejercicioTerapeutico);
+        try {
+            if (ejercicioTerapeuticoDTO.getTitulo().trim().isEmpty() || ejercicioTerapeuticoDTO.getTitulo().trim().isEmpty()) {
+                throw new EjerciciosNoValidos();
+            }
+            Medico medico = medicoDAO.buscarMedico(medicoId);
+            if (medico == null) {
+                throw new RuntimeException();
+            }
 
-        medicoDAO.actualizarMedico(medico);
+            EjercicioTerapeutico ejercicioTerapeutico = new EjercicioTerapeutico();
+            ejercicioTerapeutico = ejercicioTerapeutico.ejercicioTerapeuticoFromDTO(ejercicioTerapeuticoDTO);
+            ejercicioDAO.crearEjercicioTerapeutic(ejercicioTerapeutico);
+            medico.crearEjercicioTerapeutico(ejercicioTerapeutico);
+
+            medicoDAO.actualizarMedico(medico);
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -173,16 +201,28 @@ public class GestorMedico implements InterfazServiciosMedico {
      * @param paciente información del paciente que se quiere añadir a la lista
      */
     @Override
-    public void añadirPaciente(String medico, PacienteDTO paciente) {
-        Medico medicotmp = medicoDAO.buscarMedico(medico);
+    public boolean añadirPaciente(String medico, PacienteDTO paciente) {
 
+        Medico medicotmp = medicoDAO.buscarMedico(medico);
         Paciente pacientetmp = new Paciente();
         pacientetmp = pacientetmp.pacienteFromDTO(paciente);
-        if (!pacienteDAO.existePaciente(paciente.getCorreoElectronico())) {
-            pacienteDAO.registrarUsuario(pacientetmp);
-        }
-        medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(paciente.getCorreoElectronico()));
+        pacientetmp.setActivado(false);
+
+        pacienteDAO.registrarUsuario(pacientetmp);
+        medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(pacientetmp.getCorreoElectronico()));
         medicoDAO.actualizarMedico(medicotmp);
+
+        try {
+            gestionRegistro.envioCorreo(pacientetmp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            //En caso de que exista un fallo en la generación del correo de activación de la cuenta se borra al paciente
+            pacienteDAO.borrarPaciente(pacientetmp.getCorreoElectronico());
+            return false;
+        }
+
+        return true;
 
     }
 
@@ -191,10 +231,11 @@ public class GestorMedico implements InterfazServiciosMedico {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
     /**
      * Servicio para que un médico asigne una terapia a uno de sus pacientes
-     * @param identificadorPaciente clave del paciente al que se va a asignar la terapia
+     *
+     * @param identificadorPaciente clave del paciente al que se va a asignar la
+     * terapia
      * @param t contenido de la terapia
      * @param medico clave del médico que asigna la terapia
      */
@@ -203,14 +244,22 @@ public class GestorMedico implements InterfazServiciosMedico {
 
         Medico m = medicoDAO.buscarMedico(medico);
         Terapia terapia = new Terapia();
-        terapia =m.crearTerapia(t.getEjerciciosTerapia(), t.getFechas(),t.getComentarios());
+        terapia = m.crearTerapia(t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
         medicoDAO.actualizarMedico(m);
         //m.asignarTerapia(identificadorPaciente, t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
         Paciente p = pacienteDAO.buscarPaciente(identificadorPaciente);
         p.nuevaTerapia(terapia);
         pacienteDAO.actualizarPaciente(p);
-        
- 
+
+    }
+
+    @Override
+    public void registroPruebas(MedicoDTO medico) {
+
+        Medico m = new Medico();
+        m = Medico.medicoFromDTO(medico);
+        medicoDAO.registrarUsuario(m);
+
     }
 
 }

@@ -32,6 +32,12 @@ public class Usuario {
     private String nombre;
     private String apellidos;
     private String clave;
+    
+    private boolean activado;
+    
+    private Usuario.Rol rol;
+
+
 
     @OneToMany(cascade = CascadeType.ALL)
     @OneToOne
@@ -47,6 +53,8 @@ public class Usuario {
         this.apellidos = "";
         this.clave = "";
         this.imagenperfil = null;
+        this.activado = false;
+
 
     }
     
@@ -62,6 +70,7 @@ public class Usuario {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.clave = clave;
+        
     }
 
     /**
@@ -71,8 +80,8 @@ public class Usuario {
      * @param nombre
      * @param apellidos
      * @param clave
-     * @param imagenPerfil
-     * @param nombreImagen 
+     * @param imagenperfil
+
      */
     public Usuario(String correoElectronico, String nombre, String apellidos, String clave, Imagen imagenperfil) {
         this.correoElectronico = correoElectronico;
@@ -150,6 +159,34 @@ public class Usuario {
      */
     public void setImagenperfil(Imagen imagenperfil) {
         this.imagenperfil = imagenperfil;
+    }
+
+    /**
+     * @return the activado
+     */
+    public boolean isActivado() {
+        return activado;
+    }
+
+    /**
+     * @param activado the activado to set
+     */
+    public void setActivado(boolean activado) {
+        this.activado = activado;
+    }
+
+    /**
+     * @return the rol
+     */
+    public Usuario.Rol getRol() {
+        return rol;
+    }
+
+    /**
+     * @param rol the rol to set
+     */
+    public void setRol(Usuario.Rol rol) {
+        this.rol = rol;
     }
 
 }

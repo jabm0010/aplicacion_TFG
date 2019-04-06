@@ -10,7 +10,8 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.ujaen.apptfg.Servidor.Modelo.Terapia;
+import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
+
 
 /**
  *
@@ -18,13 +19,18 @@ import org.ujaen.apptfg.Servidor.Modelo.Terapia;
  */
 @Repository
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-public class TerapiaDAO {
+public class TokenActivacionDAO {
 
     @PersistenceContext
     EntityManager em;
 
     @Transactional
-    public void crearTerapia(Terapia t) {
+    public void nuevoToken(TokenActivacion t) {
         em.persist(t);
+    }
+    
+    @Transactional
+    public TokenActivacion obtenerToken(String id){
+        return em.find(TokenActivacion.class, id);
     }
 }

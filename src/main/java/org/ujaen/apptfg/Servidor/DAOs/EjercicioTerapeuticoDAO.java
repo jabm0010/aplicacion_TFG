@@ -28,4 +28,6 @@ public class EjercicioTerapeuticoDAO {
     public void crearEjercicioTerapeutic(EjercicioTerapeutico ejercicioTerapeutico){
         em.persist(ejercicioTerapeutico);
     }
+    
+
 }

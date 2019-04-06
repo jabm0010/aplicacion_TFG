@@ -37,7 +37,6 @@ public class Medico extends Usuario {
 
     public static int NUMERO_MAXIMO_PACIENTES = 100;
 
-    private Usuario.Rol rol;
     private versionCuenta versionCuenta;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -54,7 +53,7 @@ public class Medico extends Usuario {
      */
     public Medico() {
         super();
-        this.rol = Usuario.Rol.MEDICO;
+        super.setRol(Rol.MEDICO);
         ejerciciosCreados = new HashMap<>();
         pacientes = new HashMap<>();
     }
@@ -70,7 +69,7 @@ public class Medico extends Usuario {
      */
     public Medico(String correoElectronico, String nombre, String apellidos, String clave, versionCuenta versionCuenta) {
         super(correoElectronico, nombre, apellidos, clave);
-        this.rol = Usuario.Rol.MEDICO;
+        super.setRol(Rol.MEDICO);
         ejerciciosCreados = new HashMap<>();
         pacientes = new HashMap<>();
         this.versionCuenta = versionCuenta;
@@ -118,12 +117,13 @@ public class Medico extends Usuario {
 
     }
 
-    
     /**
      * Método para crear una nueva terapia
-     * @param ejercicios lista con objetos de tipo InfoEjerciciosTerapia que contiene el código del ejercicio
-     * y su duración
-     * @param fechasTerapia listado de fechas en los que se ha de realizar la terapia
+     *
+     * @param ejercicios lista con objetos de tipo InfoEjerciciosTerapia que
+     * contiene el código del ejercicio y su duración
+     * @param fechasTerapia listado de fechas en los que se ha de realizar la
+     * terapia
      * @param comentarios comentarios de terapia
      */
     public Terapia crearTerapia(List<InfoEjerciciosTerapia> ejercicios,
@@ -149,7 +149,7 @@ public class Medico extends Usuario {
      *
      * @param identificadorPaciente identificador del paciente al que se
      * asignará la terapia
-
+     *
      */
     public void asignarTerapia(String identificadorPaciente, Terapia t) {
 
@@ -159,10 +159,8 @@ public class Medico extends Usuario {
         } catch (RuntimeException e) {
             e.toString();
         }
-        
 
         p.getTerapiasPaciente().add(t);
-  
 
     }
 

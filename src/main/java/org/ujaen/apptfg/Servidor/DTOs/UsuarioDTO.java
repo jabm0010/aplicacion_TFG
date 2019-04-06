@@ -30,6 +30,14 @@ public class UsuarioDTO {
         this.rol = null;
 
     }
+    
+    
+    public UsuarioDTO(Usuario u){
+        this.correoElectronico = u.getCorreoElectronico();
+        this.nombre = u.getNombre();
+        this.apellidos = u.getApellidos();
+        this.rol = u.getRol();
+    }
 
     public UsuarioDTO(String correoElectronico, String nombre, String apellidos, Usuario.Rol rol) {
         this.correoElectronico = correoElectronico;

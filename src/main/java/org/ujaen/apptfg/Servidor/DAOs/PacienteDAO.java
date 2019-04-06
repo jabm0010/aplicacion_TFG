@@ -41,14 +41,19 @@ public class PacienteDAO {
 
     @Transactional
     public boolean existePaciente(String id) {
-       
-        return em.find(Paciente.class,id) != null;
+
+        return em.find(Paciente.class, id) != null;
     }
-    
-        @Transactional
-    public void actualizarPaciente(Paciente p){
+
+    @Transactional
+    public void actualizarPaciente(Paciente p) {
 
         em.merge(p);
+    }
+
+    @Transactional
+    public void borrarPaciente(String id) {
+        em.remove(em.find(Paciente.class, id));
     }
 
 }

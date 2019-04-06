@@ -32,5 +32,10 @@ public class ImagenDAO {
     public Imagen obtenerImagen(long id) {
         return em.find(Imagen.class, id);
     }
+    
+    @Transactional
+    public void borrarImagen(long id){
+        em.remove(em.find(Imagen.class, id));
+    }
 
 }
