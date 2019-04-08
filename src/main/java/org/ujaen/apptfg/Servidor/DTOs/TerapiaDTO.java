@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ujaen.apptfg.Servidor.Modelo.InfoEjerciciosTerapia;
+import org.ujaen.apptfg.Servidor.Modelo.Terapia;
 
 /**
  *
@@ -77,6 +78,14 @@ public class TerapiaDTO {
             this.fechaCreacion = fechaCreacion;
         }
 
+    }
+    
+    
+    public TerapiaDTO(Terapia t){
+        this.fechas = t.getFechas();
+        this.fechaCreacion = t.getFechaCreacion();
+        this.comentarios = t.getComentarios();
+        this.ejerciciosTerapia = t.getDuracionesEjercicios();
     }
 
 

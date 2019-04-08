@@ -46,6 +46,9 @@ public class Medico extends Usuario {
     private Map<String, Paciente> pacientes;
 
     @OneToMany(cascade = CascadeType.ALL)
+    private Map<Paciente, HistorialMedico> historialesMedicos;
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Terapia> listaTerapias;
 
     /**
@@ -185,6 +188,57 @@ public class Medico extends Usuario {
         }
 
         return listaEjercicios;
+    }
+
+    
+    //!!!revisar eficiencia de este método -> ¿añadir un mapa key = paciente value = terapias?
+    /**
+     * Método para obtener las terapias asignadas por un médico a un paciente
+     * @param p
+     * @return 
+     */
+    public List<Terapia> obtenerTerapias(String p) {
+        Paciente paciente = pacientes.get(p);
+        List<Terapia> listaTerapias_ret = new ArrayList<>();
+        listaTerapias_ret = paciente.getTerapiasPaciente();
+        for (Terapia t : listaTerapias_ret) {
+            if (!listaTerapias.contains(t)) {
+                listaTerapias_ret.remove(t);
+            }
+        }
+
+        return listaTerapias_ret;
+    }
+
+    /**
+     * Método para inicializar el historial médico de un paciente
+     *
+     * @param p
+     */
+    public void crearHistorialMedico(Paciente p) {
+        HistorialMedico h = new HistorialMedico();
+        historialesMedicos.put(p, h);
+    }
+
+    /**
+     * Método para obtener el historial médico asociado a un paciente
+     *
+     * @param p paciente del que se quiere obtener su historial médico
+     * @return
+     */
+    public HistorialMedico obtenerHistorialMedico(Paciente p) {
+        return historialesMedicos.get(p);
+    }
+    
+    public void borrarHistorialMedico(Paciente p){
+        historialesMedicos.remove(p);
+    }
+    
+
+    public void modificarHistorialMedico(String texto, Paciente p) {
+        HistorialMedico h = historialesMedicos.get(p);
+        h.nuevoComentario(texto);
+
     }
 
     public MedicoDTO medicoToDTO() {

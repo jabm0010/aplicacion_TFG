@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
@@ -37,7 +38,14 @@ public interface InterfazServiciosMedico {
     
     void asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t);
     
+    List<TerapiaDTO> obtenerTerapias(String identificadorPaciente, String medico);
     
+    HistorialMedicoDTO obtenerHistorialMedico(String medico, String paciente);
+    
+    boolean nuevoComentarioHistorialMedico(String medico, String paciente, String texto);
+    
+    
+    //Pruebas - eliminar en el futuro
     void registroPruebas(MedicoDTO medico);
     
 }

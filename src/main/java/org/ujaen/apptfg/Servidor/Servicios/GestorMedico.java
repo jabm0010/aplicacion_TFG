@@ -15,16 +15,19 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.EjercicioTerapeuticoDAO;
+import org.ujaen.apptfg.Servidor.DAOs.HistorialMedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
 import org.ujaen.apptfg.Servidor.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
+import org.ujaen.apptfg.Servidor.Modelo.HistorialMedico;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
@@ -50,6 +53,9 @@ public class GestorMedico implements InterfazServiciosMedico {
     @Autowired
     PacienteDAO pacienteDAO;
 
+    @Autowired
+    HistorialMedicoDAO historialMedicoDAO;
+    
     @Autowired
     GestionRegistro gestionRegistro;
 
@@ -210,6 +216,9 @@ public class GestorMedico implements InterfazServiciosMedico {
 
         pacienteDAO.registrarUsuario(pacientetmp);
         medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(pacientetmp.getCorreoElectronico()));
+
+        medicotmp.crearHistorialMedico(pacientetmp); //It 4 inicializar historial médico
+
         medicoDAO.actualizarMedico(medicotmp);
 
         try {
@@ -217,8 +226,10 @@ public class GestorMedico implements InterfazServiciosMedico {
 
         } catch (Exception e) {
             e.printStackTrace();
+            historialMedicoDAO.borrarHistorialMedico(medicotmp.obtenerHistorialMedico(pacientetmp).getId());
             //En caso de que exista un fallo en la generación del correo de activación de la cuenta se borra al paciente
             pacienteDAO.borrarPaciente(pacientetmp.getCorreoElectronico());
+
             return false;
         }
 
@@ -253,6 +264,37 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     }
 
+    /**
+     * Devuelve el historial médico asociado a un paciente
+     *
+     * @param medico medico que gestiona el historial medico
+     * @param paciente paciente al que está asignado el historial médico
+     * @return
+     */
+    @Override
+    public HistorialMedicoDTO obtenerHistorialMedico(String medico, String paciente) {
+
+        Medico m = medicoDAO.buscarMedico(medico);
+        Paciente p = pacienteDAO.buscarPaciente(paciente);
+        HistorialMedico h = m.obtenerHistorialMedico(p);
+        return h.historialMedicoToDTO();
+    }
+
+    @Override
+    public boolean nuevoComentarioHistorialMedico(String medico, String paciente, String texto) {
+        try {
+            Medico m = medicoDAO.buscarMedico(medico);
+            Paciente p = pacienteDAO.buscarPaciente(paciente);
+            m.modificarHistorialMedico(texto, p);
+            medicoDAO.actualizarMedico(m);
+
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void registroPruebas(MedicoDTO medico) {
 
@@ -260,6 +302,18 @@ public class GestorMedico implements InterfazServiciosMedico {
         m = Medico.medicoFromDTO(medico);
         medicoDAO.registrarUsuario(m);
 
+    }
+
+    @Override
+    public List<TerapiaDTO> obtenerTerapias(String identificadorPaciente, String medico) {
+        List<TerapiaDTO> terapias_ret = new ArrayList<>();
+
+        Medico medicotmp = medicoDAO.buscarMedico(medico);
+        medicotmp.obtenerTerapias(identificadorPaciente).forEach((t) -> {
+            terapias_ret.add(new TerapiaDTO(t));
+        });
+
+        return terapias_ret;
     }
 
 }

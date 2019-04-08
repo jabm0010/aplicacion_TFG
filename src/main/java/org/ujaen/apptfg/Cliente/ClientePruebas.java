@@ -8,6 +8,7 @@ package org.ujaen.apptfg.Cliente;
 import org.springframework.context.ApplicationContext;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosMedico;
 
@@ -49,6 +50,9 @@ public class ClientePruebas {
                 serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, "usuario1@gmail.com");
             }
 
+            PacienteDTO p = new PacienteDTO("paciente@gmail.com", "paciente0", "paciente0apellidos");
+            serviciosMedico.añadirPaciente("usuario1@gmail.com", p);
+               
 
         } catch (Exception e) {
             System.out.println(e.toString());

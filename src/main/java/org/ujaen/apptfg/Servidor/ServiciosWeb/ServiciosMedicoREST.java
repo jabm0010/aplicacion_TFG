@@ -28,6 +28,8 @@ import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 import org.ujaen.apptfg.Servidor.Utiils.Pagina;
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.ArrayList;
+import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 
 /**
  *
@@ -193,8 +195,6 @@ public class ServiciosMedicoREST {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-  
-
     }
 
     /**
@@ -218,6 +218,63 @@ public class ServiciosMedicoREST {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{medico}/terapias/{paciente}", method = GET, produces = "application/json")
+    public ResponseEntity<List<TerapiaDTO>> obtenerTerapias(@PathVariable String medico,
+            @PathVariable String paciente) {
+
+        List<TerapiaDTO> listaTerapias_ret = new ArrayList<>();
+        try {
+
+            listaTerapias_ret = gestorMedico.obtenerTerapias(paciente, medico);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(listaTerapias_ret, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param medico
+     * @param paciente
+     * @return
+     */
+    @RequestMapping(value = "/{medico}/historial/{paciente}", method = GET, produces = "application/json")
+    public ResponseEntity<HistorialMedicoDTO> obtenerHistorialMedico(
+            @PathVariable String medico,
+            @PathVariable String paciente) {
+
+        HistorialMedicoDTO hDTO = gestorMedico.obtenerHistorialMedico(medico, paciente);
+        if (hDTO != null) {
+            return new ResponseEntity<>(hDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    /**
+     *
+     * @param medico
+     * @param paciente
+     * @param texto
+     * @return
+     */
+    @RequestMapping(value = "/{medico}/historial/{paciente}", method = POST, consumes = "application/json")
+    public ResponseEntity<Void> nuevoComentarioHistorialMedico(
+            @PathVariable String medico,
+            @PathVariable String paciente,
+            @RequestBody String texto) {
+
+      
+        if (gestorMedico.nuevoComentarioHistorialMedico(medico, paciente, texto)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
 }
