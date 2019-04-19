@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.TokenActivacionDAO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
-import org.ujaen.apptfg.Servidor.GestionRegistro;
+import org.ujaen.apptfg.Servidor.Seguridad.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
 import org.ujaen.apptfg.Servidor.Utiils.ServicioCorreo;

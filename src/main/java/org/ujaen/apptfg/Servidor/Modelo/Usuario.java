@@ -9,6 +9,7 @@ import java.io.File;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -37,10 +38,7 @@ public class Usuario {
     
     private Usuario.Rol rol;
 
-
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @OneToOne
+    @OneToOne(fetch=FetchType.EAGER) 
     private Imagen imagenperfil;
 
     

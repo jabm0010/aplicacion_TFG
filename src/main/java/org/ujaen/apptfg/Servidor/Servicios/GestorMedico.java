@@ -13,7 +13,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.ujaen.apptfg.Servidor.DAOs.EjercicioTerapeuticoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.HistorialMedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
@@ -25,7 +28,7 @@ import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
-import org.ujaen.apptfg.Servidor.GestionRegistro;
+import org.ujaen.apptfg.Servidor.Seguridad.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
 import org.ujaen.apptfg.Servidor.Modelo.HistorialMedico;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
@@ -55,7 +58,7 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     @Autowired
     HistorialMedicoDAO historialMedicoDAO;
-    
+
     @Autowired
     GestionRegistro gestionRegistro;
 
@@ -76,7 +79,10 @@ public class GestorMedico implements InterfazServiciosMedico {
                 imagenDAO.guardarImagen(imagentmp);
                 medicoRegistro.setImagenperfil(imagentmp);
             }
-            medicoRegistro.setClave(medico.getClave());
+
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String clave = passwordEncoder.encode(medico.getClave());
+            medicoRegistro.setClave(clave);
             medicoRegistro.setActivado(true);
             medicoDAO.actualizarMedico(medicoRegistro);
         } catch (Exception e) {
@@ -185,12 +191,14 @@ public class GestorMedico implements InterfazServiciosMedico {
      * @param medico identificador del médico que quiere acceder a su lista
      * @return
      */
+    @Transactional
     @Override
     public List<PacienteDTO> obtenerPacientes(String medico) {
         Medico medicotmp = medicoDAO.buscarMedico(medico);
 
         List<PacienteDTO> ret_pacientes = new ArrayList<>();
         List<Paciente> pacientesSource;
+        
         pacientesSource = new ArrayList<>(medicotmp.getPacientes().values());
 
         pacientesSource.forEach((p) -> {
@@ -296,15 +304,6 @@ public class GestorMedico implements InterfazServiciosMedico {
     }
 
     @Override
-    public void registroPruebas(MedicoDTO medico) {
-
-        Medico m = new Medico();
-        m = Medico.medicoFromDTO(medico);
-        medicoDAO.registrarUsuario(m);
-
-    }
-
-    @Override
     public List<TerapiaDTO> obtenerTerapias(String identificadorPaciente, String medico) {
         List<TerapiaDTO> terapias_ret = new ArrayList<>();
 
@@ -314,6 +313,15 @@ public class GestorMedico implements InterfazServiciosMedico {
         });
 
         return terapias_ret;
+    }
+
+    @Override
+    public void registroPruebas(MedicoDTO medico) {
+
+        Medico m = new Medico();
+        m = Medico.medicoFromDTO(medico);
+        medicoDAO.registrarUsuario(m);
+
     }
 
 }

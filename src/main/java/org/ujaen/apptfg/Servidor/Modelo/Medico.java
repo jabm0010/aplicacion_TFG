@@ -19,6 +19,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import org.hibernate.annotations.Cascade;
+import org.springframework.transaction.annotation.Transactional;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
 import org.ujaen.apptfg.Servidor.Excepciones.MaximoPacientesAlcanzado;
@@ -270,6 +271,7 @@ public class Medico extends Usuario {
     /**
      * @return the pacientes
      */
+  
     public Map<String, Paciente> getPacientes() {
         return pacientes;
     }

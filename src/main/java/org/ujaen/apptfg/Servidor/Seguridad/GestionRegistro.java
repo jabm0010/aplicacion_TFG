@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.ujaen.apptfg.Servidor;
+package org.ujaen.apptfg.Servidor.Seguridad;
 
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,26 +1,27 @@
 ## YAML Template.
 ---
 
-## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+#Configuración capa persistencia
 spring.datasource.driver-class-name: org.postgresql.Driver
 spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
 spring.datasource.username: postgres    
 spring.datasource.password: jabm0010
-
-# The SQL dialect makes Hibernate generate better SQL for the chosen database
 spring.jpa.properties.hibernate.dialect : org.hibernate.dialect.PostgreSQLDialect
-
-# Hibernate ddl auto (create, create, validate, update)
 spring.jpa.hibernate.ddl-auto : create
-
 spring.jpa.properties.hibernate.enable_lazy_load_no_trans: true
-
 spring.datasource.tomcat.max-active: 50
 
-
+#Configuración servicio correo electrónico
 spring.mail.host: smtp.gmail.com
 spring.mail.port: 587
 spring.mail.username: tfggestionterapias
 spring.mail.password: OXt9Nco1Lc
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
+
+#Configuración seguridad
+#server.port: 8443
+#server.ssl.key-store: classpath:tfgterapias.p12
+#server.ssl.key-store-password: OXt9Nco1Lc
+#server.ssl.keyStoreType: PKCS12
+#server.ssl.keyAlias: tomcat

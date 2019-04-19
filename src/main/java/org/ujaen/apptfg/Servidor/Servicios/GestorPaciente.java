@@ -6,6 +6,8 @@
 package org.ujaen.apptfg.Servidor.Servicios;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
@@ -35,7 +37,10 @@ public class GestorPaciente implements InterfazServiciosPaciente {
             Imagen imagentmp = new Imagen(paciente.getImagen(), paciente.getNombreImagen());
             imagenDAO.guardarImagen(imagentmp);
             pacienteRegistro.setImagenperfil(imagentmp);
-            pacienteRegistro.setClave(paciente.getClave());
+
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String clave = passwordEncoder.encode(paciente.getClave());
+            pacienteRegistro.setClave(clave);
             pacienteRegistro.setActivado(true);
             pacienteDAO.actualizarPaciente(pacienteRegistro);
         } catch (Exception e) {

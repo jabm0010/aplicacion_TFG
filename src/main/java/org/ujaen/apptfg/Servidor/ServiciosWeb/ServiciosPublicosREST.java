@@ -5,11 +5,15 @@
  */
 package org.ujaen.apptfg.Servidor.ServiciosWeb;
 
+import java.io.UnsupportedEncodingException;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +27,8 @@ import org.ujaen.apptfg.Servidor.DAOs.TokenActivacionDAO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.UsuarioDTO;
+import org.ujaen.apptfg.Servidor.Modelo.Medico;
+import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
 import org.ujaen.apptfg.Servidor.Modelo.Usuario;
 import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
@@ -53,9 +59,11 @@ public class ServiciosPublicosREST {
     PacienteDAO pacienteDAO;
 
     /**
-     * Servicio REST para identificar a un usuario en la fase de registro con su token
+     * Servicio REST para identificar a un usuario en la fase de registro con su
+     * token
+     *
      * @param token
-     * @return 
+     * @return
      */
     @RequestMapping(value = "/usuarios/{token}", method = GET, produces = "application/json")
     public ResponseEntity<UsuarioDTO> identificarToken(@PathVariable String token) {
@@ -63,18 +71,16 @@ public class ServiciosPublicosREST {
         if (tokenActivacion != null) {
             Usuario u = tokenActivacion.getUsuario();
             //En caso de que la cuenta de usuario ya haya sido activada
-            if(u.isActivado()){
+            if (u.isActivado()) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
-                      
+
             UsuarioDTO uDTO = new UsuarioDTO(u);
             return new ResponseEntity<>(uDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
-    
 
     /**
      * Servicio REST para registrar a un usuario
@@ -102,6 +108,32 @@ public class ServiciosPublicosREST {
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/usuarios", method = POST, consumes = "application/json", produces = "application/json")
+    public ResponseEntity<UsuarioDTO> identificarUsuarioLogin(@RequestBody UsuarioDTO usuario) throws UnsupportedEncodingException {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        byte[] claveByte = Base64.decodeBase64(usuario.getClave());
+        String clave = new String(claveByte);
+        clave = clave.trim();
+        Medico m = medicoDAO.buscarMedico(usuario.getCorreoElectronico());
+        Paciente p = pacienteDAO.buscarPaciente(usuario.getCorreoElectronico());
+        if (m != null) {
+            if (passwordEncoder.matches(clave,m.getClave())) {
+                UsuarioDTO u = new UsuarioDTO();
+                u.setRol(Usuario.Rol.MEDICO);
+                return new ResponseEntity<>(u, HttpStatus.OK);
+            }
+        } else if (p != null) {
+            if (passwordEncoder.matches(clave,m.getClave())) {
+                UsuarioDTO u = new UsuarioDTO();
+                u.setRol(Usuario.Rol.PACIENTE);
+                return new ResponseEntity<>(u, HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
 }
