@@ -49,6 +49,10 @@ public class Paciente extends Usuario{
     public PacienteDTO pacienteToDTO(){
         PacienteDTO pacienteDTO = new PacienteDTO(super.getCorreoElectronico(), 
                 super.getNombre(), super.getApellidos(),super.getClave());
+        
+        if(this.getImagenperfil()!=null){
+          pacienteDTO.setImagen(this.getImagenperfil().obtenerImagenBase64());
+        }
         return pacienteDTO;
     }
     

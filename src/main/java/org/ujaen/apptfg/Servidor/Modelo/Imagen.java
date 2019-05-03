@@ -93,7 +93,9 @@ public class Imagen implements Serializable {
      */
     public String obtenerImagenBase64(){
         String imagenBase64 = Base64.encodeBase64String(imagen);
-        return imagenBase64;
+        String cabecera = "data:image/jpeg;base64,";
+        imagenBase64 = imagenBase64.substring(imagenBase64.indexOf("4")+1);
+        return cabecera+imagenBase64;
         
     }
     

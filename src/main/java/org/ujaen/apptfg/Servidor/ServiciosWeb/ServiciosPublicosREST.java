@@ -110,7 +110,7 @@ public class ServiciosPublicosREST {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/usuarios", method = POST, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/login/usuarios", method = POST, consumes = "application/json", produces = "application/json")
     public ResponseEntity<UsuarioDTO> identificarUsuarioLogin(@RequestBody UsuarioDTO usuario) throws UnsupportedEncodingException {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         byte[] claveByte = Base64.decodeBase64(usuario.getClave());
@@ -119,13 +119,13 @@ public class ServiciosPublicosREST {
         Medico m = medicoDAO.buscarMedico(usuario.getCorreoElectronico());
         Paciente p = pacienteDAO.buscarPaciente(usuario.getCorreoElectronico());
         if (m != null) {
-            if (passwordEncoder.matches(clave,m.getClave())) {
+            if (passwordEncoder.matches(clave, m.getClave()) && m.isActivado()) {
                 UsuarioDTO u = new UsuarioDTO();
                 u.setRol(Usuario.Rol.MEDICO);
                 return new ResponseEntity<>(u, HttpStatus.OK);
             }
         } else if (p != null) {
-            if (passwordEncoder.matches(clave,m.getClave())) {
+            if (passwordEncoder.matches(clave, p.getClave()) && p.isActivado()) {
                 UsuarioDTO u = new UsuarioDTO();
                 u.setRol(Usuario.Rol.PACIENTE);
                 return new ResponseEntity<>(u, HttpStatus.OK);
@@ -135,5 +135,6 @@ public class ServiciosPublicosREST {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
+
 
 }

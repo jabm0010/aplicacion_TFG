@@ -31,6 +31,34 @@ import org.ujaen.apptfg.Servidor.Excepciones.PacienteYaAñadido;
 @Entity
 public class Medico extends Usuario {
 
+    /**
+     * @return the historialesMedicos
+     */
+    public Map<Paciente, HistorialMedico> getHistorialesMedicos() {
+        return historialesMedicos;
+    }
+
+    /**
+     * @param historialesMedicos the historialesMedicos to set
+     */
+    public void setHistorialesMedicos(Map<Paciente, HistorialMedico> historialesMedicos) {
+        this.historialesMedicos = historialesMedicos;
+    }
+
+    /**
+     * @return the listaTerapias
+     */
+    public List<Terapia> getListaTerapias() {
+        return listaTerapias;
+    }
+
+    /**
+     * @param listaTerapias the listaTerapias to set
+     */
+    public void setListaTerapias(List<Terapia> listaTerapias) {
+        this.listaTerapias = listaTerapias;
+    }
+
     public enum versionCuenta {
         BASICA,
         PREMIUM
@@ -49,7 +77,7 @@ public class Medico extends Usuario {
     @OneToMany(cascade = CascadeType.ALL)
     private Map<Paciente, HistorialMedico> historialesMedicos;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "medico",cascade = CascadeType.ALL)
     private List<Terapia> listaTerapias;
 
     /**
@@ -138,13 +166,17 @@ public class Medico extends Usuario {
 
         try {
             List<EjercicioTerapeutico> listadoEjercicios = obtenerEjercicios(ejercicios);
+            ejercicios.forEach((i) -> {
+                i.setTituloEjercicio(this.ejerciciosCreados.get(i.getCodigoEjercicio()).getTitulo());
+            });
             t.setListaEjercicios(listadoEjercicios);
             t.setDuracionesEjercicios(ejercicios);
+            
 
         } catch (RuntimeException e) {
             e.toString();
         }
-        listaTerapias.add(t);
+        getListaTerapias().add(t);
         return t;
     }
 
@@ -218,7 +250,7 @@ public class Medico extends Usuario {
      */
     public void crearHistorialMedico(Paciente p) {
         HistorialMedico h = new HistorialMedico();
-        historialesMedicos.put(p, h);
+        getHistorialesMedicos().put(p, h);
     }
 
     /**
@@ -228,16 +260,16 @@ public class Medico extends Usuario {
      * @return
      */
     public HistorialMedico obtenerHistorialMedico(Paciente p) {
-        return historialesMedicos.get(p);
+        return getHistorialesMedicos().get(p);
     }
     
     public void borrarHistorialMedico(Paciente p){
-        historialesMedicos.remove(p);
+        getHistorialesMedicos().remove(p);
     }
     
 
     public void modificarHistorialMedico(String texto, Paciente p) {
-        HistorialMedico h = historialesMedicos.get(p);
+        HistorialMedico h = getHistorialesMedicos().get(p);
         h.nuevoComentario(texto);
 
     }
@@ -260,6 +292,12 @@ public class Medico extends Usuario {
     public Map<Long, EjercicioTerapeutico> getEjerciciosCreados() {
         return ejerciciosCreados;
     }
+    
+    
+    public EjercicioTerapeutico obtenerEjercicio(Long id){
+        return ejerciciosCreados.get(id);
+    }
+    
 
     /**
      * @param ejerciciosCreados the ejerciciosCreados to set

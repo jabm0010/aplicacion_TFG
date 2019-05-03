@@ -6,23 +6,28 @@
 package org.ujaen.apptfg.Servidor.DTOs;
 
 import java.time.LocalDateTime;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.ujaen.apptfg.Servidor.Modelo.Medico;
 
 /**
  *
  * @author Juan Antonio Béjar Martos
  */
-public class EjercicioTerapeuticoDTO {
+public class EjercicioTerapeuticoDTO  extends ResourceSupport {
        
     private String titulo;
     private String descripcion;
     private LocalDateTime fechaCreacion;
-    private long id;
+    private long identificador;
+   
     
      public EjercicioTerapeuticoDTO(){
         this.titulo = "";
         this.descripcion = "";
         this.fechaCreacion = LocalDateTime.now();
-        this.id = 0;
+        this.identificador = 0;
         
         
     }
@@ -37,7 +42,7 @@ public class EjercicioTerapeuticoDTO {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaCreacion = fechaCreacion;
-        this.id = id;
+        this.identificador = id;
     }
 
     /**
@@ -83,16 +88,19 @@ public class EjercicioTerapeuticoDTO {
     }
 
     /**
-     * @return the id
+     * @return the identificador
      */
-    public long getId() {
-        return id;
+
+    public long getIdentificador() {
+        return identificador;
     }
 
     /**
-     * @param id the id to set
+     * @param identificador the identificador to set
      */
-    public void setId(long id) {
-        this.id = id;
+    public void setIdentificador(long identificador) {
+        this.identificador = identificador;
     }
+
+
 }

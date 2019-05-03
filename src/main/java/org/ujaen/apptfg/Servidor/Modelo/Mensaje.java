@@ -6,34 +6,67 @@
 package org.ujaen.apptfg.Servidor.Modelo;
 
 import java.time.LocalDateTime;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 
 /**
  *
  * @author Juan Antonio Béjar Martos
  */
+@Entity
 public class Mensaje {
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     private LocalDateTime fechaActualización;
     private String contenido;
     private boolean editado;
-    
-    public Mensaje(){
+
+    @OneToOne
+    Usuario usuario;
+
+    public Mensaje() {
         fechaActualización = LocalDateTime.now();
         contenido = "";
         editado = false;
+        usuario = null;
     }
 
-   /*
-    * @brief Constructor de mensajes parametrizado con el cuerpo del mensaje
-    * @param [in] contenido     Cuerpo del mensasje
-    *
-    */
-    public Mensaje(String contenido){
+    public Mensaje(String contenido, Usuario usuario) {
         this.contenido = contenido;
         this.fechaActualización = LocalDateTime.now();
         editado = false;
+        this.usuario = usuario;
     }
 
+    public void modificarMensaje(String contenido) {
+        this.contenido = contenido;
+        this.fechaActualización = LocalDateTime.now();
+        editado = true;
+    }
+
+    public MensajeDTO MensajeToDTO() {
+
+       MensajeDTO m = new MensajeDTO(this.contenido, this.fechaActualización, this.editado,
+                this.usuario.getNombre() + " " + this.usuario.getApellidos(),
+                this.usuario.getCorreoElectronico(),this.id);
+       
+       if(this.usuario.getImagenperfil() != null){
+           m.setImagenAutor(this.usuario.getImagenperfil().obtenerImagenBase64());
+       }
+      return m;
+    }
+
+    
+    
+    
+    
     /**
      * @return the fechaActualización
      */
@@ -75,5 +108,13 @@ public class Mensaje {
     public void setEditado(boolean editado) {
         this.editado = editado;
     }
-    
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }

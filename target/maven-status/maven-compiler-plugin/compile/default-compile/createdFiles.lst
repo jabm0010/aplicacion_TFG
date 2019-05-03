@@ -12,6 +12,7 @@ org\ujaen\apptfg\Servidor\Excepciones\UsuarioNoRegistrado.class
 org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosPacienteREST.class
 org\ujaen\apptfg\Servidor\Servicios\GestorAdministrador.class
 org\ujaen\apptfg\Servidor\DAOs\EjercicioTerapeuticoDAO.class
+org\ujaen\apptfg\Servidor\Excepciones\FechaRealizacionTerapiaNoValida.class
 org\ujaen\apptfg\Servidor\Modelo\Paciente.class
 org\ujaen\apptfg\Servidor\DAOs\ImagenDAO.class
 org\ujaen\apptfg\Servidor\Utiils\Pagina.class
@@ -20,6 +21,7 @@ org\ujaen\apptfg\Servidor\Servicios\InterfazServiciosAdministrador.class
 org\ujaen\apptfg\Servidor\Modelo\Usuario.class
 org\ujaen\apptfg\Servidor\Modelo\Medico$versionCuenta.class
 org\ujaen\apptfg\Servidor\Modelo\HistorialMedico.class
+org\ujaen\apptfg\Servidor\DTOs\MensajeDTO.class
 org\ujaen\apptfg\Servidor\Seguridad\ServicioDatosUsuario.class
 org\ujaen\apptfg\Servidor\Modelo\EjercicioTerapeutico.class
 org\ujaen\apptfg\Servidor\DAOs\HistorialMedicoDAO.class
@@ -44,7 +46,6 @@ org\ujaen\apptfg\Servidor\ServiciosWeb\ServiciosAdminREST.class
 org\ujaen\apptfg\Servidor\DTOs\EjercicioTerapeuticoDTO.class
 org\ujaen\apptfg\Servidor\DTOs\UsuarioDTO.class
 org\ujaen\apptfg\Servidor\Servicios\GestorMedico.class
-org\ujaen\apptfg\Servidor\ServidorTerapias$1.class
 org\ujaen\apptfg\Servidor\Excepciones\MaximoPacientesAlcanzado.class
 org\ujaen\apptfg\Servidor\Modelo\TokenActivacion.class
 org\ujaen\apptfg\Servidor\Servicios\GestorPaciente.class

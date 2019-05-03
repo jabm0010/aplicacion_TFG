@@ -27,4 +27,20 @@ public class TerapiaDAO {
     public void crearTerapia(Terapia t) {
         em.persist(t);
     }
+    
+    @Transactional
+    public Terapia obtenerTerapia(String id){
+        return em.find(Terapia.class, id);
+    }
+    
+    @Transactional
+    public void actualizarTerapia(String id){
+        em.merge(em.find(Terapia.class,id));
+    }
+    
+    @Transactional
+    public void actualizarTerapia(Terapia t){
+        em.merge(t);
+    }
+    
 }

@@ -9,11 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -22,8 +18,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+import org.ujaen.apptfg.Servidor.Excepciones.FechaRealizacionTerapiaNoValida;
 
 /**
  *
@@ -34,20 +33,32 @@ public class Terapia implements Serializable {
 
     @Id
     private String uniqueID;
-    
-   
+
     private LocalDateTime fechaCreacion;
-    
-    @ElementCollection 
+
+    @ElementCollection
     private List<LocalDate> fechas;
 
-    @ManyToMany (cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<EjercicioTerapeutico> listaEjercicios;
 
-    @OneToMany (cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<InfoEjerciciosTerapia> duracionesEjercicios;
 
     private String comentarios;
+
+    //Nuevo
+    @ElementCollection
+    private List<LocalDate> fechasRealizadas;
+
+    @ManyToOne
+    private Medico medico;
+
+    @Transient
+    private int progreso;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    private Chat mensajesTerapia;
 
     public Terapia() {
         this.uniqueID = UUID.randomUUID().toString();
@@ -55,10 +66,31 @@ public class Terapia implements Serializable {
         this.fechas = new ArrayList<>();
         this.duracionesEjercicios = new ArrayList<>();
         this.listaEjercicios = new ArrayList<>();
+        this.fechasRealizadas = new ArrayList<>();
+        this.medico = null;
+        this.mensajesTerapia = new Chat();
+        actualizarProgreso();
 
     }
-    
 
+    public void actualizarFechas(LocalDate fechaRealizada) {
+        if (fechas.contains(fechaRealizada) && !fechasRealizadas.contains(fechaRealizada)) {
+            fechasRealizadas.add(fechaRealizada);
+            actualizarProgreso();
+            
+            
+        }else{
+            throw new FechaRealizacionTerapiaNoValida();
+        }
+        
+        
+    }
+
+    private int actualizarProgreso(){
+        return 1;
+        //return fechasRealizadas.size() * 100 / fechas.size();
+    }
+    
     /**
      * @return the fechaCreacion
      */
@@ -86,8 +118,6 @@ public class Terapia implements Serializable {
     public void setFechas(List<LocalDate> fechas) {
         this.fechas = fechas;
     }
-
-
 
     /**
      * @return the comentarios
@@ -145,5 +175,60 @@ public class Terapia implements Serializable {
         this.uniqueID = uniqueID;
     }
 
-    
+    /**
+     * @return the fechasRealizadas
+     */
+    public List<LocalDate> getFechasRealizadas() {
+        return fechasRealizadas;
+    }
+
+    /**
+     * @param fechasRealizadas the fechasRealizadas to set
+     */
+    public void setFechasRealizadas(List<LocalDate> fechasRealizadas) {
+        this.fechasRealizadas = fechasRealizadas;
+    }
+
+    /**
+     * @return the progreso
+     */
+    public int getProgreso() {
+        return progreso;
+    }
+
+    /**
+     * @param progreso the progreso to set
+     */
+    public void setProgreso(int progreso) {
+        this.progreso = progreso;
+    }
+
+    /**
+     * @return the medico
+     */
+    public Medico getMedico() {
+        return medico;
+    }
+
+    /**
+     * @param medico the medico to set
+     */
+    public void setMedico(Medico medico) {
+        this.medico = medico;
+    }
+
+    /**
+     * @return the mensajesTerapia
+     */
+    public Chat getMensajesTerapia() {
+        return mensajesTerapia;
+    }
+
+    /**
+     * @param mensajesTerapia the mensajesTerapia to set
+     */
+    public void setMensajesTerapia(Chat mensajesTerapia) {
+        this.mensajesTerapia = mensajesTerapia;
+    }
+
 }

@@ -5,15 +5,23 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
+import org.ujaen.apptfg.Servidor.DAOs.TerapiaDAO;
+import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
+import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
+import org.ujaen.apptfg.Servidor.Modelo.Mensaje;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
+import org.ujaen.apptfg.Servidor.Modelo.Terapia;
 
 /**
  *
@@ -27,6 +35,9 @@ public class GestorPaciente implements InterfazServiciosPaciente {
 
     @Autowired
     ImagenDAO imagenDAO;
+
+    @Autowired
+    TerapiaDAO terapiaDAO;
 
     @Override
     public boolean registro(PacienteDTO paciente) {
@@ -50,4 +61,113 @@ public class GestorPaciente implements InterfazServiciosPaciente {
 
         return true;
     }
+
+    @Override
+    public boolean configurarPerfil(PacienteDTO paciente) {
+
+        try {
+            Paciente p = pacienteDAO.buscarPaciente(paciente.getCorreoElectronico());
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (!paciente.getClave().isBlank() && !passwordEncoder.matches(paciente.getClave(), p.getClave())) {
+                String clave = passwordEncoder.encode(paciente.getClave());
+                p.setClave(clave);
+            }
+
+            if (paciente.getImagen() != null) {
+                Imagen imagentmp = new Imagen(paciente.getImagen(), paciente.getNombreImagen());
+                imagenDAO.guardarImagen(imagentmp);
+                p.setImagenperfil(imagentmp);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    @Override
+    public List<TerapiaDTO> obtenerTerapias(String paciente) {
+        Paciente p = pacienteDAO.buscarPaciente(paciente);
+        List<TerapiaDTO> terapias_ret = new ArrayList<>();
+        p.getTerapiasPaciente().forEach((t) -> {
+            terapias_ret.add(new TerapiaDTO(t));
+        });
+
+        return terapias_ret;
+
+    }
+
+    @Override
+    public boolean actualizarTerapia(String paciente, String idTerapia, LocalDate fecha) {
+
+        try {
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+            Paciente p = pacienteDAO.buscarPaciente(paciente);
+            if (!p.getTerapiasPaciente().contains(t)) {
+                return false;
+            }
+            t.actualizarFechas(fecha);
+            terapiaDAO.actualizarTerapia(t);
+
+        } catch (Exception e) {
+            e.toString();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean enviarMensaje(String idTerapia, String mensaje, String paciente) {
+        try {
+            Paciente p = pacienteDAO.buscarPaciente(paciente);
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+            t.getMensajesTerapia().nuevoMensaje(p, mensaje);
+            terapiaDAO.actualizarTerapia(t);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje) {
+        try {
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+            t.getMensajesTerapia().modificarMensaje(idMensaje, mensaje);
+            terapiaDAO.actualizarTerapia(t);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    @Override
+    public List<MensajeDTO> obtenerMensajes(String idTerapia) {
+        try {
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+            List<Mensaje> mensajesTerapiaSource = new ArrayList<>(t.getMensajesTerapia().getMensajes());
+            List<MensajeDTO> mensajeRet = new ArrayList<>();
+            mensajesTerapiaSource.forEach((mensaje) -> {
+                mensajeRet.add(mensaje.MensajeToDTO());
+            });
+            return mensajeRet;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public PacienteDTO obtenerPerfilUsuario(String paciente) {
+
+        Paciente pacientetmp = pacienteDAO.buscarPaciente(paciente);
+        PacienteDTO retPacienteDTO = pacientetmp.pacienteToDTO();
+        if (pacientetmp.getImagenperfil() != null) {
+            retPacienteDTO.setImagen(pacientetmp.getImagenperfil().obtenerImagenBase64());
+            retPacienteDTO.setNombreImagen(pacientetmp.getImagenperfil().getNombre());
+        }
+        return retPacienteDTO;
+    }
+
 }

@@ -29,7 +29,11 @@ import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 import org.ujaen.apptfg.Servidor.Utiils.Pagina;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
+import org.ujaen.apptfg.Servidor.Modelo.InfoEjerciciosTerapia;
 
 /**
  *
@@ -67,36 +71,16 @@ public class ServiciosMedicoREST {
      * Implementación servicio REST para obtener ejercicios terapéuticos
      *
      * @param medico id identificador del médico
-     * @param page página que se quiere recuperar
-     * @param size número de elementos que componen la página
-     * @return ResponseEntity con código correspondiente
-     */
-    @RequestMapping(value = "/{medico}/ejerciciospaginados", method = GET, produces = "application/json")
-    public ResponseEntity<Pagina<EjercicioTerapeuticoDTO>> obtenerEjerciciosTerapeuticosPagina(
-            @PathVariable String medico,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "5") int size) {
-
-        List<EjercicioTerapeuticoDTO> ejerciciosTerapeuticos = gestorMedico.obtenerEjercicios(medico);
-        if (ejerciciosTerapeuticos == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-
-        } else {
-            Pagina<EjercicioTerapeuticoDTO> pagina = new Pagina<>(ejerciciosTerapeuticos, page, size);
-            return new ResponseEntity<>(pagina, HttpStatus.OK);
-        }
-
-    }
-
-    /**
-     * Implementación servicio REST para obtener ejercicios terapéuticos
-     *
-     * @param medico id identificador del médico
+     * @param page pagina a la que se quiere acceder
+     * @param size tamaño de la página, por defecto será del tamaño igual al
+     * número total de ejercicios
      * @return ResponseEntity con código correspondiente
      */
     @RequestMapping(value = "/{medico}/ejercicios", method = GET, produces = "application/json")
-    public ResponseEntity<List<EjercicioTerapeuticoDTO>> obtenerEjerciciosTerapeuticos(
-            @PathVariable String medico
+    public ResponseEntity<Pagina<EjercicioTerapeuticoDTO>> obtenerEjerciciosTerapeuticos(
+            @PathVariable String medico,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "0") int size
     ) {
 
         List<EjercicioTerapeuticoDTO> ejerciciosTerapeuticos = gestorMedico.obtenerEjercicios(medico);
@@ -104,7 +88,33 @@ public class ServiciosMedicoREST {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(gestorMedico.obtenerEjercicios(medico), HttpStatus.OK);
+        if (size == 0) {
+            size = ejerciciosTerapeuticos.size();
+        }
+        Pagina<EjercicioTerapeuticoDTO> pagina = new Pagina<>(ejerciciosTerapeuticos, page, size);
+        return new ResponseEntity<>(pagina, HttpStatus.OK);
+    }
+
+    /**
+     * Implementación REST para obtener un ejercicio terapéutico filtrado por su
+     * ID
+     *
+     * @param medico identificador del médico
+     * @param id identificador del ejercicio
+     * @return
+     */
+    @RequestMapping(value = "/{medico}/ejercicios/{id}", method = GET, produces = "application/json")
+    public ResponseEntity<EjercicioTerapeuticoDTO> obtenerEjercicioId(
+            @PathVariable String medico,
+            @PathVariable Long id
+    ) {
+
+        EjercicioTerapeuticoDTO ejercicioTerapeuticoRet = gestorMedico.obtenerEjercicio(medico, id);
+        if (ejercicioTerapeuticoRet == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(ejercicioTerapeuticoRet, HttpStatus.OK);
 
     }
 
@@ -154,6 +164,26 @@ public class ServiciosMedicoREST {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Implementación servicio REST para modificar el perfil de un médico
+     *
+     * @param medico id identificador del médico
+     * @param nuevoPerfil información del perfil a modificar
+     * @return ResponseEntity con código correspondiente
+     */
+    @RequestMapping(value = "/{medico}", method = PUT, produces = "application/json")
+    public ResponseEntity<Void> modificarPerfil(
+            @PathVariable String medico,
+            @RequestBody MedicoDTO nuevoPerfil
+    ) {
+
+        if (gestorMedico.configurarPerfil(nuevoPerfil)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     /**
@@ -226,12 +256,26 @@ public class ServiciosMedicoREST {
 
         List<TerapiaDTO> listaTerapias_ret = new ArrayList<>();
         try {
-
             listaTerapias_ret = gestorMedico.obtenerTerapias(paciente, medico);
-
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+
+        for (TerapiaDTO t : listaTerapias_ret) {
+            for (InfoEjerciciosTerapia i : t.getEjerciciosTerapia()) {
+                Link l = ControllerLinkBuilder.linkTo(
+                        ControllerLinkBuilder.methodOn(ServiciosMedicoREST.class).
+                                obtenerEjercicioId(medico, i.getCodigoEjercicio())).withSelfRel();
+
+                i.setEnlaceEjercicio(l);
+            }
+
+            Link l = ControllerLinkBuilder.linkTo(
+                    ControllerLinkBuilder.methodOn(ServiciosMedicoREST.class).
+                            obtenerMensajesTerapia(medico, t.getIdTerapia())).withSelfRel();
+            t.setLinkChatTerapia(l);
+        }
+
         return new ResponseEntity<>(listaTerapias_ret, HttpStatus.OK);
     }
 
@@ -268,11 +312,54 @@ public class ServiciosMedicoREST {
             @PathVariable String paciente,
             @RequestBody String texto) {
 
-      
         if (gestorMedico.nuevoComentarioHistorialMedico(medico, paciente, texto)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = GET, produces = "application/json")
+    public ResponseEntity<List<MensajeDTO>> obtenerMensajesTerapia(
+            @PathVariable String medico,
+            @PathVariable String terapia
+    ) {
+        List<MensajeDTO> mensajesTerapia = new ArrayList<>();
+        mensajesTerapia = gestorMedico.obtenerMensajes(terapia);
+        if (!mensajesTerapia.isEmpty()) {
+            return new ResponseEntity<>(mensajesTerapia, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = POST, produces = "application/json")
+    public ResponseEntity<Void> enviarMensaje(
+            @PathVariable String medico,
+            @PathVariable String terapia,
+            @RequestBody MensajeDTO mensaje
+    ) {
+        if (gestorMedico.enviarMensaje(terapia, mensaje.getContenido(), medico)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+    }
+
+    @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = PUT, produces = "application/json")
+    public ResponseEntity<Void> modificarMensaje(
+            @PathVariable String medico,
+            @PathVariable String terapia,
+            @RequestBody MensajeDTO mensaje
+    ) {
+
+        if (gestorMedico.editarMensaje(terapia, mensaje.getContenido(), mensaje.getIdentificador())) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
     }

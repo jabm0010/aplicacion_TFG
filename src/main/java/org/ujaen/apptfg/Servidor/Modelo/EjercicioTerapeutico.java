@@ -12,6 +12,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
+import static org.springframework.hateoas.jaxrs.JaxRsLinkBuilder.linkTo;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 
 /**
@@ -30,14 +34,16 @@ public class EjercicioTerapeutico implements Serializable {
     @Column(length = 500)
     private String descripcion;
     private LocalDateTime fechaCreacion;
+    
+
 
     public EjercicioTerapeutico() {
         this.titulo = "";
         this.descripcion = "";
         fechaCreacion = LocalDateTime.now();
-
+       
     }
-
+    
     public EjercicioTerapeutico(String titulo, String descripcion) {
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -103,6 +109,7 @@ public class EjercicioTerapeutico implements Serializable {
         EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO
                 = new EjercicioTerapeuticoDTO(titulo, descripcion, fechaCreacion, getId());
 
+
         return ejercicioTerapeuticoDTO;
     }
 
@@ -111,7 +118,8 @@ public class EjercicioTerapeutico implements Serializable {
         ejercicioTerapeutico = new EjercicioTerapeutico(
                 ejercicioTerapeuticoDTO.getTitulo(), ejercicioTerapeuticoDTO.getDescripcion(),
                 ejercicioTerapeuticoDTO.getFechaCreacion(),
-                ejercicioTerapeuticoDTO.getId());
+                ejercicioTerapeuticoDTO.getIdentificador());
+
         if (ejercicioTerapeuticoDTO.getFechaCreacion() == null) {
             ejercicioTerapeutico.setFechaCreacion(LocalDateTime.now());
         }
@@ -122,8 +130,10 @@ public class EjercicioTerapeutico implements Serializable {
     /**
      * @return the id
      */
+
     public long getId() {
         return id;
     }
+
 
 }

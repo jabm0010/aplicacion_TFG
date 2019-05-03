@@ -5,7 +5,11 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import java.time.LocalDate;
+import java.util.List;
+import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
+import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 
 /**
  *
@@ -14,4 +18,19 @@ import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 public interface InterfazServiciosPaciente {
 
     boolean registro(PacienteDTO paciente);
+
+    boolean configurarPerfil(PacienteDTO paciente);
+    
+    List<TerapiaDTO> obtenerTerapias(String paciente);
+
+    boolean actualizarTerapia(String paciente, String idTerapia, LocalDate fecha);
+
+    boolean enviarMensaje(String idTerapia, String mensaje, String paciente);
+    
+    boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje);
+
+    List<MensajeDTO> obtenerMensajes(String idTerapia);
+
+    PacienteDTO obtenerPerfilUsuario(String paciente);
+
 }

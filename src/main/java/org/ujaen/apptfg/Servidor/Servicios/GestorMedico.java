@@ -22,9 +22,11 @@ import org.ujaen.apptfg.Servidor.DAOs.HistorialMedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
+import org.ujaen.apptfg.Servidor.DAOs.TerapiaDAO;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
@@ -33,6 +35,7 @@ import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
 import org.ujaen.apptfg.Servidor.Modelo.HistorialMedico;
 import org.ujaen.apptfg.Servidor.Modelo.Imagen;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
+import org.ujaen.apptfg.Servidor.Modelo.Mensaje;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 import org.ujaen.apptfg.Servidor.Modelo.Terapia;
 import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
@@ -61,6 +64,9 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     @Autowired
     GestionRegistro gestionRegistro;
+
+    @Autowired
+    TerapiaDAO terapiaDAO;
 
     /**
      *
@@ -94,6 +100,34 @@ public class GestorMedico implements InterfazServiciosMedico {
 
         return true;
 
+    }
+
+    /**
+     * Método para modificar los parámetros de clave e imagen de perfil de un
+     * médico. Si alguno
+     *
+     * @param medico
+     */
+    @Override
+    public boolean configurarPerfil(MedicoDTO medico) {
+
+        try {
+            Medico m = medicoDAO.buscarMedico(medico.getCorreoElectronico());
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (!medico.getClave().isBlank() && !passwordEncoder.matches(medico.getClave(), m.getClave())) {
+                String clave = passwordEncoder.encode(medico.getClave());
+                m.setClave(clave);
+            }
+
+            if (medico.getImagen() != null) {
+                Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
+                imagenDAO.guardarImagen(imagentmp);
+                m.setImagenperfil(imagentmp);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -148,6 +182,14 @@ public class GestorMedico implements InterfazServiciosMedico {
         return ret_ejerciciosTerapeuticos;
     }
 
+    @Override
+    public EjercicioTerapeuticoDTO obtenerEjercicio(String medico, Long id) {
+        Medico medicotmp = medicoDAO.buscarMedico(medico);
+
+        return medicotmp.obtenerEjercicio(id).ejercicioTerapeuticoToDTO();
+
+    }
+
     /**
      * Método para guardar los cambios realizados en un ejercicio terapétuico ya
      * existente
@@ -198,7 +240,7 @@ public class GestorMedico implements InterfazServiciosMedico {
 
         List<PacienteDTO> ret_pacientes = new ArrayList<>();
         List<Paciente> pacientesSource;
-        
+
         pacientesSource = new ArrayList<>(medicotmp.getPacientes().values());
 
         pacientesSource.forEach((p) -> {
@@ -220,7 +262,7 @@ public class GestorMedico implements InterfazServiciosMedico {
         Medico medicotmp = medicoDAO.buscarMedico(medico);
         Paciente pacientetmp = new Paciente();
         pacientetmp = pacientetmp.pacienteFromDTO(paciente);
-        pacientetmp.setActivado(false);
+        pacientetmp.setActivado(true); //Cambiar!!!!
 
         pacienteDAO.registrarUsuario(pacientetmp);
         medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(pacientetmp.getCorreoElectronico()));
@@ -245,11 +287,6 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     }
 
-    @Override
-    public void configurarPerfil(MedicoDTO medico) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     /**
      * Servicio para que un médico asigne una terapia a uno de sus pacientes
      *
@@ -264,6 +301,7 @@ public class GestorMedico implements InterfazServiciosMedico {
         Medico m = medicoDAO.buscarMedico(medico);
         Terapia terapia = new Terapia();
         terapia = m.crearTerapia(t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
+        terapia.setMedico(m);
         medicoDAO.actualizarMedico(m);
         //m.asignarTerapia(identificadorPaciente, t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
         Paciente p = pacienteDAO.buscarPaciente(identificadorPaciente);
@@ -320,7 +358,53 @@ public class GestorMedico implements InterfazServiciosMedico {
 
         Medico m = new Medico();
         m = Medico.medicoFromDTO(medico);
+        m.setActivado(true);
         medicoDAO.registrarUsuario(m);
+
+    }
+
+    @Override
+    public boolean enviarMensaje(String idTerapia, String mensaje, String medico) {
+        try {
+            Medico m = medicoDAO.buscarMedico(medico);
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+
+            t.getMensajesTerapia().nuevoMensaje(m, mensaje);
+            terapiaDAO.actualizarTerapia(t);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje) {
+        try {
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+            t.getMensajesTerapia().modificarMensaje(idMensaje, mensaje);
+            terapiaDAO.actualizarTerapia(t);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    @Override
+    public List<MensajeDTO> obtenerMensajes(String idTerapia) {
+        try {
+            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
+            List<Mensaje> mensajesTerapiaSource = new ArrayList<>(t.getMensajesTerapia().getMensajes());
+            List<MensajeDTO> mensajeRet = new ArrayList<>();
+            mensajesTerapiaSource.forEach((mensaje) -> {
+                mensajeRet.add(mensaje.MensajeToDTO());
+            });
+            return mensajeRet;
+        } catch (Exception e) {
+            return null;
+        }
 
     }
 

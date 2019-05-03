@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.hateoas.Link;
 import org.ujaen.apptfg.Servidor.Modelo.InfoEjerciciosTerapia;
 import org.ujaen.apptfg.Servidor.Modelo.Terapia;
 
@@ -33,59 +34,50 @@ import org.ujaen.apptfg.Servidor.Modelo.Terapia;
  */
 public class TerapiaDTO {
 
+    private String idTerapia;
+    
     private LocalDateTime fechaCreacion;
-
+    
     private List<LocalDate> fechas;
-
-    private List<InfoEjerciciosTerapia> ejerciciosTerapia;
-
+    
+    private List<LocalDate> fechasRealizadas;
+    
+    private List<InfoEjerciciosTerapia> ejerciciosTerapia;  
+    
     private String comentarios;
-
-
-    public TerapiaDTO(
-            List<LocalDate> fechas,
-            LocalDateTime fechaCreacion,
-            String comentarios,
-            List<String> ejercicios,
-            List<String> duraciones,
-            List<InfoEjerciciosTerapia> ejerciciosTerapia
-    ) {
-        System.out.println("Eeee");
-        this.fechas = fechas;
-        this.fechaCreacion = fechaCreacion;
-        this.comentarios = comentarios;
-        this.ejerciciosTerapia = ejerciciosTerapia;
-
-        System.out.println(ejerciciosTerapia);
-        
-
-    }
-
-    public TerapiaDTO() {
-        this.fechaCreacion = LocalDateTime.now();
+    
+    private String medicoCorreoElectronico;
+    
+    private String medicoNombre;
+    
+    private String medicoApellidos;
+    
+    private Link linkChatTerapia;
+    
+    public TerapiaDTO(){
+        this.idTerapia = null;
+        this.fechaCreacion = null;
         this.fechas = new ArrayList<>();
         this.ejerciciosTerapia = new ArrayList<>();
         this.comentarios = null;
-
-    }
-
-    public TerapiaDTO(LocalDateTime fechaCreacion, List<LocalDate> fechas, String comentarios) throws IOException {
-        this.fechas = fechas;
-        this.comentarios = comentarios;
-        if (fechaCreacion == null) {
-            this.fechaCreacion = LocalDateTime.now();
-        } else {
-            this.fechaCreacion = fechaCreacion;
-        }
-
+        this.medicoCorreoElectronico = null;
+        this.medicoNombre = null;
+        this.medicoApellidos = null;
+        this.linkChatTerapia = null;
     }
     
     
     public TerapiaDTO(Terapia t){
+        this.idTerapia = t.getUniqueID();
         this.fechas = t.getFechas();
         this.fechaCreacion = t.getFechaCreacion();
         this.comentarios = t.getComentarios();
         this.ejerciciosTerapia = t.getDuracionesEjercicios();
+        this.medicoCorreoElectronico = t.getMedico().getCorreoElectronico();
+        this.medicoNombre = t.getMedico().getNombre();
+        this.medicoApellidos = t.getMedico().getApellidos();
+        this.linkChatTerapia = null;
+        this.fechasRealizadas = t.getFechasRealizadas();
     }
 
 
@@ -138,6 +130,90 @@ public class TerapiaDTO {
      */
     public void setEjerciciosTerapia(List<InfoEjerciciosTerapia> ejerciciosTerapia) {
         this.ejerciciosTerapia = ejerciciosTerapia;
+    }
+
+    /**
+     * @return the medicoCorreoElectronico
+     */
+    public String getMedicoCorreoElectronico() {
+        return medicoCorreoElectronico;
+    }
+
+    /**
+     * @param medicoCorreoElectronico the medicoCorreoElectronico to set
+     */
+    public void setMedicoCorreoElectronico(String medicoCorreoElectronico) {
+        this.medicoCorreoElectronico = medicoCorreoElectronico;
+    }
+
+    /**
+     * @return the medicoNombre
+     */
+    public String getMedicoNombre() {
+        return medicoNombre;
+    }
+
+    /**
+     * @param medicoNombre the medicoNombre to set
+     */
+    public void setMedicoNombre(String medicoNombre) {
+        this.medicoNombre = medicoNombre;
+    }
+
+    /**
+     * @return the medicoApellidos
+     */
+    public String getMedicoApellidos() {
+        return medicoApellidos;
+    }
+
+    /**
+     * @param medicoApellidos the medicoApellidos to set
+     */
+    public void setMedicoApellidos(String medicoApellidos) {
+        this.medicoApellidos = medicoApellidos;
+    }
+
+    /**
+     * @return the idTerapia
+     */
+    public String getIdTerapia() {
+        return idTerapia;
+    }
+
+    /**
+     * @param idTerapia the idTerapia to set
+     */
+    public void setIdTerapia(String idTerapia) {
+        this.idTerapia = idTerapia;
+    }
+
+    /**
+     * @return the linkChatTerapia
+     */
+    public Link getLinkChatTerapia() {
+        return linkChatTerapia;
+    }
+
+    /**
+     * @param linkChatTerapia the linkChatTerapia to set
+     */
+    public void setLinkChatTerapia(Link linkChatTerapia) {
+        this.linkChatTerapia = linkChatTerapia;
+    }
+
+    /**
+     * @return the fechasRealizadas
+     */
+    public List<LocalDate> getFechasRealizadas() {
+        return fechasRealizadas;
+    }
+
+    /**
+     * @param fechasRealizadas the fechasRealizadas to set
+     */
+    public void setFechasRealizadas(List<LocalDate> fechasRealizadas) {
+        this.fechasRealizadas = fechasRealizadas;
     }
 
 
