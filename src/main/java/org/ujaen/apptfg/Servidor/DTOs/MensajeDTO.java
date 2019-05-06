@@ -8,7 +8,7 @@ package org.ujaen.apptfg.Servidor.DTOs;
 import java.time.LocalDateTime;
 
 /**
- *
+ * Clase DTO de Mensaje
  * @author Juan Antonio Béjar Martos
  */
 public class MensajeDTO {

@@ -31,34 +31,6 @@ import org.ujaen.apptfg.Servidor.Excepciones.PacienteYaAñadido;
 @Entity
 public class Medico extends Usuario {
 
-    /**
-     * @return the historialesMedicos
-     */
-    public Map<Paciente, HistorialMedico> getHistorialesMedicos() {
-        return historialesMedicos;
-    }
-
-    /**
-     * @param historialesMedicos the historialesMedicos to set
-     */
-    public void setHistorialesMedicos(Map<Paciente, HistorialMedico> historialesMedicos) {
-        this.historialesMedicos = historialesMedicos;
-    }
-
-    /**
-     * @return the listaTerapias
-     */
-    public List<Terapia> getListaTerapias() {
-        return listaTerapias;
-    }
-
-    /**
-     * @param listaTerapias the listaTerapias to set
-     */
-    public void setListaTerapias(List<Terapia> listaTerapias) {
-        this.listaTerapias = listaTerapias;
-    }
-
     public enum versionCuenta {
         BASICA,
         PREMIUM
@@ -77,7 +49,7 @@ public class Medico extends Usuario {
     @OneToMany(cascade = CascadeType.ALL)
     private Map<Paciente, HistorialMedico> historialesMedicos;
 
-    @OneToMany(mappedBy = "medico",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL)
     private List<Terapia> listaTerapias;
 
     /**
@@ -126,6 +98,7 @@ public class Medico extends Usuario {
         EjercicioTerapeutico tmp = ejerciciosCreados.get(ejercicio.getId());
         tmp.setTitulo(ejercicio.getTitulo());
         tmp.setDescripcion(ejercicio.getDescripcion());
+        tmp.setVideoEjercicio(ejercicio.getVideoEjercicio());
 
         ejerciciosCreados.put(ejercicio.getId(), tmp);
 
@@ -171,7 +144,6 @@ public class Medico extends Usuario {
             });
             t.setListaEjercicios(listadoEjercicios);
             t.setDuracionesEjercicios(ejercicios);
-            
 
         } catch (RuntimeException e) {
             e.toString();
@@ -223,12 +195,12 @@ public class Medico extends Usuario {
         return listaEjercicios;
     }
 
-    
     //!!!revisar eficiencia de este método -> ¿añadir un mapa key = paciente value = terapias?
     /**
      * Método para obtener las terapias asignadas por un médico a un paciente
+     *
      * @param p
-     * @return 
+     * @return
      */
     public List<Terapia> obtenerTerapias(String p) {
         Paciente paciente = pacientes.get(p);
@@ -262,11 +234,10 @@ public class Medico extends Usuario {
     public HistorialMedico obtenerHistorialMedico(Paciente p) {
         return getHistorialesMedicos().get(p);
     }
-    
-    public void borrarHistorialMedico(Paciente p){
+
+    public void borrarHistorialMedico(Paciente p) {
         getHistorialesMedicos().remove(p);
     }
-    
 
     public void modificarHistorialMedico(String texto, Paciente p) {
         HistorialMedico h = getHistorialesMedicos().get(p);
@@ -292,12 +263,10 @@ public class Medico extends Usuario {
     public Map<Long, EjercicioTerapeutico> getEjerciciosCreados() {
         return ejerciciosCreados;
     }
-    
-    
-    public EjercicioTerapeutico obtenerEjercicio(Long id){
+
+    public EjercicioTerapeutico obtenerEjercicio(Long id) {
         return ejerciciosCreados.get(id);
     }
-    
 
     /**
      * @param ejerciciosCreados the ejerciciosCreados to set
@@ -309,7 +278,6 @@ public class Medico extends Usuario {
     /**
      * @return the pacientes
      */
-  
     public Map<String, Paciente> getPacientes() {
         return pacientes;
     }
@@ -326,6 +294,34 @@ public class Medico extends Usuario {
      */
     public void setVersionCuenta(versionCuenta versionCuenta) {
         this.versionCuenta = versionCuenta;
+    }
+
+    /**
+     * @return the historialesMedicos
+     */
+    public Map<Paciente, HistorialMedico> getHistorialesMedicos() {
+        return historialesMedicos;
+    }
+
+    /**
+     * @param historialesMedicos the historialesMedicos to set
+     */
+    public void setHistorialesMedicos(Map<Paciente, HistorialMedico> historialesMedicos) {
+        this.historialesMedicos = historialesMedicos;
+    }
+
+    /**
+     * @return the listaTerapias
+     */
+    public List<Terapia> getListaTerapias() {
+        return listaTerapias;
+    }
+
+    /**
+     * @param listaTerapias the listaTerapias to set
+     */
+    public void setListaTerapias(List<Terapia> listaTerapias) {
+        this.listaTerapias = listaTerapias;
     }
 
 }

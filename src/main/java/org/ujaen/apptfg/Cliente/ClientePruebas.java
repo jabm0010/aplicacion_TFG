@@ -39,6 +39,8 @@ public class ClientePruebas {
             System.out.println("Ejecutando cliente pruebas");
 
             InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
+
+          
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             for (int i = 0; i < 5; i++) {
                 String correo = "usuario" + i + "@gmail.com";

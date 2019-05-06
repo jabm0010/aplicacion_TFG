@@ -29,10 +29,14 @@ import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 import org.ujaen.apptfg.Servidor.Utiils.Pagina;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
+import org.springframework.content.commons.repository.Store;
+import org.springframework.content.rest.StoreRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
+import org.ujaen.apptfg.Servidor.DTOs.VideoDTO;
 import org.ujaen.apptfg.Servidor.Modelo.InfoEjerciciosTerapia;
 
 /**
@@ -362,6 +366,38 @@ public class ServiciosMedicoREST {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
+    }
+
+    @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos", method = POST, consumes = "application/json")
+    public ResponseEntity<Void> asignarVideoEjercicio(
+            @PathVariable String medico,
+            @PathVariable Long idejercicio,
+            @RequestBody VideoDTO video) {
+
+        if (!gestorMedico.almacenarVideo(medico, idejercicio, video.getIdentificador(), video.getDatosVideo())) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+
+    }
+
+    @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos/{idvideo}", method = DELETE, produces = "application/json")
+    public ResponseEntity<Void> eliminarVideoEjercicio(
+            @PathVariable String medico,
+            @PathVariable Long idejercicio,
+            @PathVariable String idvideo) {
+
+        if (!gestorMedico.eliminarVideo(medico, idejercicio, idvideo)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @StoreRestResource(path = "videos")
+    public interface VideoStore extends Store<String> {
     }
 
 }

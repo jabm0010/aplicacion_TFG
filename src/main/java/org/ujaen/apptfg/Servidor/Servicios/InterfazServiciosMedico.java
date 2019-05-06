@@ -55,5 +55,10 @@ public interface InterfazServiciosMedico {
 
     //Pruebas - eliminar en el futuro
     void registroPruebas(MedicoDTO medico);
+    
+    byte[] cargarVideo(String identificador);
 
+    boolean almacenarVideo(String medico, long idEjercicio, String identificador, String datos);
+    
+    boolean eliminarVideo(String medico, long idEjercicio, String identificador);
 }

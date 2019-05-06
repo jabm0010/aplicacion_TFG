@@ -9,7 +9,7 @@ import org.ujaen.apptfg.Servidor.Modelo.Medico.versionCuenta;
 import org.ujaen.apptfg.Servidor.Modelo.Usuario;
 
 /**
- *
+ * Clase DTO de HistorialMedico
  * @author Juan Antonio Béjar Martos
  */
 public class MedicoDTO extends UsuarioDTO {
@@ -21,7 +21,7 @@ public class MedicoDTO extends UsuarioDTO {
         super.setRol(Usuario.Rol.MEDICO);
 
     }
-
+       
     public MedicoDTO(String correoElectronico, String nombre, String apellidos, versionCuenta version) {
         super(correoElectronico, nombre, apellidos, Usuario.Rol.MEDICO);
         this.versionCuenta = version;

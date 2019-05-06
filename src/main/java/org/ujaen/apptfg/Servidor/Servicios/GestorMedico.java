@@ -6,12 +6,15 @@
 package org.ujaen.apptfg.Servidor.Servicios;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +26,7 @@ import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
 import org.ujaen.apptfg.Servidor.DAOs.TerapiaDAO;
+import org.ujaen.apptfg.Servidor.DAOs.VideoDAO;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
@@ -30,6 +34,7 @@ import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
+import org.ujaen.apptfg.Servidor.Excepciones.UsuarioNoRegistrado;
 import org.ujaen.apptfg.Servidor.Seguridad.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
 import org.ujaen.apptfg.Servidor.Modelo.HistorialMedico;
@@ -39,6 +44,7 @@ import org.ujaen.apptfg.Servidor.Modelo.Mensaje;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 import org.ujaen.apptfg.Servidor.Modelo.Terapia;
 import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
+import org.ujaen.apptfg.Servidor.Modelo.Video;
 
 /**
  *
@@ -67,6 +73,9 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     @Autowired
     TerapiaDAO terapiaDAO;
+
+    @Autowired
+    VideoDAO videoDAO;
 
     /**
      *
@@ -140,16 +149,24 @@ public class GestorMedico implements InterfazServiciosMedico {
     public boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO, String medicoId) {
 
         try {
-            if (ejercicioTerapeuticoDTO.getTitulo().trim().isEmpty() || ejercicioTerapeuticoDTO.getTitulo().trim().isEmpty()) {
+            if (ejercicioTerapeuticoDTO.getTitulo().trim().isEmpty() || ejercicioTerapeuticoDTO.getDescripcion().trim().isEmpty()) {
                 throw new EjerciciosNoValidos();
             }
             Medico medico = medicoDAO.buscarMedico(medicoId);
             if (medico == null) {
-                throw new RuntimeException();
+                throw new UsuarioNoRegistrado();
             }
 
-            EjercicioTerapeutico ejercicioTerapeutico = new EjercicioTerapeutico();
-            ejercicioTerapeutico = ejercicioTerapeutico.ejercicioTerapeuticoFromDTO(ejercicioTerapeuticoDTO);
+            EjercicioTerapeutico ejercicioTerapeutico;
+            Video v = new Video();
+            if (ejercicioTerapeuticoDTO.getVideo() == null) {
+                ejercicioTerapeutico = new EjercicioTerapeutico(ejercicioTerapeuticoDTO);
+            } else {
+                String identificadorVideo = medicoId + ejercicioTerapeuticoDTO.getIdentificador();
+                v.setIdentificador(identificadorVideo);
+                v.almacenarVideo(medicoId, ejercicioTerapeuticoDTO.getVideo());
+                ejercicioTerapeutico = new EjercicioTerapeutico(ejercicioTerapeuticoDTO, v);
+            }
             ejercicioDAO.crearEjercicioTerapeutic(ejercicioTerapeutico);
             medico.crearEjercicioTerapeutico(ejercicioTerapeutico);
 
@@ -164,48 +181,88 @@ public class GestorMedico implements InterfazServiciosMedico {
     /**
      * Devuelve un listado con los ejercicios terapéuticos creados por un médico
      *
-     * @param medico identificador del médico
+     * @param medicoId identificador del médico
      * @return
      */
     @Override
-    public List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medico) {
-        Medico medicotmp = medicoDAO.buscarMedico(medico);
+    public List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medicoId) {
+        try {
 
-        List<EjercicioTerapeuticoDTO> ret_ejerciciosTerapeuticos = new ArrayList<>();
-        List<EjercicioTerapeutico> ejerciciosTerapeuticosSource;
-        ejerciciosTerapeuticosSource = new ArrayList<>(medicotmp.getEjerciciosCreados().values());
+            Medico medicotmp = medicoDAO.buscarMedico(medicoId);
+            if (medicoId == null) {
+                throw new UsuarioNoRegistrado();
+            }
 
-        ejerciciosTerapeuticosSource.forEach((e) -> {
-            ret_ejerciciosTerapeuticos.add(e.ejercicioTerapeuticoToDTO());
-        });
+            List<EjercicioTerapeuticoDTO> ret_ejerciciosTerapeuticos = new ArrayList<>();
+            List<EjercicioTerapeutico> ejerciciosTerapeuticosSource;
+            ejerciciosTerapeuticosSource = new ArrayList<>(medicotmp.getEjerciciosCreados().values());
 
-        return ret_ejerciciosTerapeuticos;
+            ejerciciosTerapeuticosSource.forEach((e) -> {
+                ret_ejerciciosTerapeuticos.add(new EjercicioTerapeuticoDTO(e));
+            });
+
+            return ret_ejerciciosTerapeuticos;
+        } catch (Exception e) {
+
+        }
+
+        return null;
     }
 
+    /**
+     * Método para obtener un ejercicio buscando por su identificador
+     *
+     * @param medicoId
+     * @param ejercicioTerapeuticoI
+     * @return
+     */
     @Override
-    public EjercicioTerapeuticoDTO obtenerEjercicio(String medico, Long id) {
-        Medico medicotmp = medicoDAO.buscarMedico(medico);
+    public EjercicioTerapeuticoDTO obtenerEjercicio(String medicoId, Long ejercicioTerapeuticoI) {
+        try {
+            Medico medicotmp = medicoDAO.buscarMedico(medicoId);
+            if (medicotmp == null) {
+                throw new UsuarioNoRegistrado();
+            }
 
-        return medicotmp.obtenerEjercicio(id).ejercicioTerapeuticoToDTO();
+            return new EjercicioTerapeuticoDTO(medicotmp.obtenerEjercicio(ejercicioTerapeuticoI));
+        } catch (Exception e) {
 
+        }
+        return null;
     }
 
     /**
      * Método para guardar los cambios realizados en un ejercicio terapétuico ya
      * existente
      *
-     * @param ejercicioTerapeutico ejercicio terapéutico actualizado
-     * @param medico identificador del mñedico
+     * @param ejercicioTerapeuticoDTO ejercicio terapéutico actualizado
+     * @param medicoId identificador del mñedico
      */
     @Override
-    public void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico) {
-        Medico medicotmp = medicoDAO.buscarMedico(medico);
-        EjercicioTerapeutico ejerciciotmp = new EjercicioTerapeutico();
-        ejerciciotmp = ejerciciotmp.ejercicioTerapeuticoFromDTO(ejercicioTerapeutico);
-        medicotmp.editarEjercicioTerapeutico(ejerciciotmp);
+    public void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO ,String medicoId) {
+        try {
+            Medico medicotmp = medicoDAO.buscarMedico(medicoId);
+            if (medicotmp == null) {
+                throw new UsuarioNoRegistrado();
+            }
 
-        medicoDAO.actualizarMedico(medicotmp);
+            EjercicioTerapeutico ejerciciotmp;
+            Video v = new Video();
+            if (ejercicioTerapeuticoDTO.getVideo() == null) {
+                ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeuticoDTO);
+            } else {
+                String identificadorVideo = medicoId + ejercicioTerapeuticoDTO.getIdentificador();
+                v.setIdentificador(identificadorVideo);
+                v.almacenarVideo(medicoId, ejercicioTerapeuticoDTO.getVideo());
+                ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeuticoDTO, v);
+            }
 
+            medicotmp.editarEjercicioTerapeutico(ejerciciotmp);
+
+            medicoDAO.actualizarMedico(medicotmp);
+        } catch (Exception e) {
+
+        }
     }
 
     /**
@@ -323,7 +380,7 @@ public class GestorMedico implements InterfazServiciosMedico {
         Medico m = medicoDAO.buscarMedico(medico);
         Paciente p = pacienteDAO.buscarPaciente(paciente);
         HistorialMedico h = m.obtenerHistorialMedico(p);
-        return h.historialMedicoToDTO();
+        return new HistorialMedicoDTO(h);
     }
 
     @Override
@@ -405,6 +462,66 @@ public class GestorMedico implements InterfazServiciosMedico {
         } catch (Exception e) {
             return null;
         }
+
+    }
+
+    @Override
+    public byte[] cargarVideo(String identificador) {
+        Video v = new Video(identificador);
+        try {
+            return v.cargarVideo();
+        } catch (Exception e) {
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * @param medico
+     * @param idEjercicio
+     * @param identificador
+     * @param datos
+     * @return
+     */
+    @Override
+    public boolean almacenarVideo(String medico, long idEjercicio, String identificador, String datos) {
+        try {
+            Medico m = medicoDAO.buscarMedico(medico);
+            EjercicioTerapeutico e = m.obtenerEjercicio(idEjercicio);
+            Video v = new Video(identificador);
+            v.almacenarVideo(identificador, datos);
+            e.setVideoEjercicio(v);
+            medicoDAO.actualizarMedico(m);
+        } catch (Exception e) {
+            e.toString();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @param medico
+     * @param idEjercicio
+     * @param identificador
+     * @return
+     */
+    @Override
+    public boolean eliminarVideo(String medico, long idEjercicio, String identificador) {
+        try {
+            Medico m = medicoDAO.buscarMedico(medico);
+            EjercicioTerapeutico e = m.obtenerEjercicio(idEjercicio);
+            Video v = new Video(identificador);
+            v.eliminarVideo(identificador);
+            e.setVideoEjercicio(null);
+            videoDAO.borrarVideo(identificador);
+            medicoDAO.actualizarMedico(m);
+        } catch (Exception e) {
+            e.toString();
+            return false;
+        }
+        return true;
 
     }
 

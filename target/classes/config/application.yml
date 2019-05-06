@@ -25,3 +25,7 @@ spring.mail.properties.mail.smtp.starttls.enable: true
 #server.ssl.key-store-password: OXt9Nco1Lc
 #server.ssl.keyStoreType: PKCS12
 #server.ssl.keyAlias: tomcat
+
+#Configuración streaming de videos
+spring.content.fs.filesystemRoot : C:\Users\jabm9\Desktop\TFG\Videos
+video.sourcefolder: C:\Users\jabm9\Desktop\TFG\Videos

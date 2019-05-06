@@ -22,15 +22,29 @@ import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 @Entity
 public class HistorialMedico {
 
+    /**
+     * @return the comentariosHistorial
+     */
+    public Map<LocalDateTime, String> getComentariosHistorial() {
+        return comentariosHistorial;
+    }
+
+    /**
+     * @param comentariosHistorial the comentariosHistorial to set
+     */
+    public void setComentariosHistorial(Map<LocalDateTime, String> comentariosHistorial) {
+        this.comentariosHistorial = comentariosHistorial;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ElementCollection 
-    Map<LocalDateTime, String> comentariosHistorial;
+    private Map<LocalDateTime, String> comentariosHistorial;
     
     public void nuevoComentario(String texto){
-        comentariosHistorial.put(LocalDateTime.now(), texto);
+        getComentariosHistorial().put(LocalDateTime.now(), texto);
     }
     
     public HistorialMedico(){
@@ -46,10 +60,5 @@ public class HistorialMedico {
         this.id = id;
     }
 
-    public HistorialMedicoDTO historialMedicoToDTO( 
-        HistorialMedico this){
-        HistorialMedicoDTO h = new HistorialMedicoDTO();
-        h.setComentariosHistorial(this.comentariosHistorial);
-        return h;
-    }
+
 }
