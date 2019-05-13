@@ -48,9 +48,6 @@ public class ServicioDatosUsuario implements UserDetailsService {
             }
         }
 
-        System.out.println(userDetails.getAuthorities());
-        System.out.println(userDetails.getUsername());
-        System.out.println(userDetails.getPassword());
         return userDetails;
     }
 }

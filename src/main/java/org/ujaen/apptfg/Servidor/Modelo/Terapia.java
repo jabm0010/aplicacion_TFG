@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -45,6 +46,7 @@ public class Terapia implements Serializable {
     @OneToMany(cascade = CascadeType.ALL)
     private List<InfoEjerciciosTerapia> duracionesEjercicios;
 
+    @Column(length = 2000)
     private String comentarios;
 
     //Nuevo

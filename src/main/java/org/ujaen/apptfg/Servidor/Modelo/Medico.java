@@ -94,16 +94,32 @@ public class Medico extends Usuario {
      *
      * @param ejercicio método para modificar un ejercicio ya existente
      */
-    public void editarEjercicioTerapeutico(EjercicioTerapeutico ejercicio) {
+    public void editarEjercicioTerapeutico(EjercicioTerapeutico ejercicio) {        
         EjercicioTerapeutico tmp = ejerciciosCreados.get(ejercicio.getId());
         tmp.setTitulo(ejercicio.getTitulo());
         tmp.setDescripcion(ejercicio.getDescripcion());
-        tmp.setVideoEjercicio(ejercicio.getVideoEjercicio());
-
+        //Caso 1: se borra el video asociado al ejercicio
+        if(ejercicio.getVideoEjercicio() == null && tmp.getVideoEjercicio() != null){
+            tmp.getVideoEjercicio().eliminarVideo();
+            tmp.setVideoEjercicio(null);
+        }
+        //Caso 2: se reemplaza el video por uno nuevo
+        if(ejercicio.getVideoEjercicio() != null && tmp.getVideoEjercicio() != null){
+            tmp.getVideoEjercicio().eliminarVideo();
+            tmp.setVideoEjercicio(ejercicio.getVideoEjercicio());
+        }
+        //Caso 3: se añade un video nuevo
+        if(ejercicio.getVideoEjercicio() != null && tmp.getVideoEjercicio() == null){
+            tmp.setVideoEjercicio(ejercicio.getVideoEjercicio());
+        }
+        
+        
         ejerciciosCreados.put(ejercicio.getId(), tmp);
 
     }
 
+    
+    
     /**
      * Método para añadir un nuevo paciente a la lista de pacientes del médico.
      *
@@ -215,6 +231,11 @@ public class Medico extends Usuario {
         return listaTerapias_ret;
     }
 
+    public void borrarVideo(Long idEjercicio){
+        this.ejerciciosCreados.get(idEjercicio).getVideoEjercicio().eliminarVideo();
+    }
+    
+    
     /**
      * Método para inicializar el historial médico de un paciente
      *

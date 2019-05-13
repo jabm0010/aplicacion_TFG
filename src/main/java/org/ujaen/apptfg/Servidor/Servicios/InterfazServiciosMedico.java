@@ -5,9 +5,11 @@
  */
 package org.ujaen.apptfg.Servidor.Servicios;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 import org.ujaen.apptfg.Servidor.DTOs.EjercicioTerapeuticoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
@@ -25,13 +27,13 @@ public interface InterfazServiciosMedico {
 
     boolean configurarPerfil(MedicoDTO medico);
 
-    boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
+    boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico, MultipartFile video);
 
     List<EjercicioTerapeuticoDTO> obtenerEjercicios(String medico);
 
     EjercicioTerapeuticoDTO obtenerEjercicio(String medico, Long id);
 
-    void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico);
+    boolean editarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico, MultipartFile video);
 
     List<PacienteDTO> obtenerPacientes(String medico);
 

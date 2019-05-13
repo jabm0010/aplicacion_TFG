@@ -5,6 +5,7 @@
  */
 package org.ujaen.apptfg.Servidor.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -14,8 +15,10 @@ import org.ujaen.apptfg.Servidor.Modelo.Medico;
 
 /**
  * Clase DTO de EjercicioTerapeutico
+ *
  * @author Juan Antonio Béjar Martos
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EjercicioTerapeuticoDTO extends ResourceSupport {
 
     private String titulo;
@@ -23,13 +26,19 @@ public class EjercicioTerapeuticoDTO extends ResourceSupport {
     private LocalDateTime fechaCreacion;
     private long identificador;
     private String video;
-    
+    private String idVideo;
+
 
     public EjercicioTerapeuticoDTO(EjercicioTerapeutico e) {
         this.titulo = e.getTitulo();
         this.descripcion = e.getDescripcion();
         this.fechaCreacion = e.getFechaCreacion();
         this.identificador = e.getId();
+        if (e.getVideoEjercicio() != null) {
+            this.idVideo = e.getVideoEjercicio().getIdentificador() + e.getVideoEjercicio().getExtension();
+        }else{
+            this.idVideo = null;
+        }
     }
 
     public EjercicioTerapeuticoDTO() {
@@ -37,15 +46,17 @@ public class EjercicioTerapeuticoDTO extends ResourceSupport {
         this.descripcion = "";
         this.fechaCreacion = LocalDateTime.now();
         this.identificador = 0;
+        this.idVideo = null;
 
     }
-    
+
     /**
      * Método para cliente de pruebas. Borrar en el futuro
+     *
      * @param nombre
-     * @param descripcion 
+     * @param descripcion
      */
-    public EjercicioTerapeuticoDTO(String nombre, String descripcion){
+    public EjercicioTerapeuticoDTO(String nombre, String descripcion) {
         this.titulo = nombre;
         this.descripcion = descripcion;
     }
@@ -119,5 +130,20 @@ public class EjercicioTerapeuticoDTO extends ResourceSupport {
     public void setVideo(String video) {
         this.video = video;
     }
+
+    /**
+     * @return the idVideo
+     */
+    public String getIdVideo() {
+        return idVideo;
+    }
+
+    /**
+     * @param idVideo the idVideo to set
+     */
+    public void setIdVideo(String idVideo) {
+        this.idVideo = idVideo;
+    }
+
 
 }

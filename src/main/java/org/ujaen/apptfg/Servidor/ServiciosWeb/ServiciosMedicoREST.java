@@ -5,6 +5,7 @@
  */
 package org.ujaen.apptfg.Servidor.ServiciosWeb;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,20 @@ import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 import org.ujaen.apptfg.Servidor.Utiils.Pagina;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.content.commons.repository.Store;
 import org.springframework.content.rest.StoreRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.ui.Model;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import org.springframework.web.multipart.MultipartFile;
 import org.ujaen.apptfg.Servidor.DTOs.HistorialMedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 import org.ujaen.apptfg.Servidor.DTOs.VideoDTO;
@@ -46,6 +55,7 @@ import org.ujaen.apptfg.Servidor.Modelo.InfoEjerciciosTerapia;
 @RestController
 @CrossOrigin
 @RequestMapping("/medicos")
+@ConfigurationProperties()
 public class ServiciosMedicoREST {
 
     @Autowired
@@ -56,14 +66,49 @@ public class ServiciosMedicoREST {
      *
      * @param medico id identificador del médico
      * @param ejercicio información del ejercicio a crear
+     * @param file archivo de video asociado al ejercicio
      * @return ResponseEntity con código correspondiente
+     * @throws java.io.IOException
      */
-    @RequestMapping(value = "/{medico}/ejercicios", method = POST, consumes = "application/json")
+    @RequestMapping(value = "/{medico}/ejercicios", method = POST)
     public ResponseEntity<Void> crearEjercicioTerapeutico(
             @PathVariable String medico,
-            @RequestBody EjercicioTerapeuticoDTO ejercicio) {
+            @RequestParam("model") String ejercicio,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) throws IOException {
 
-        if (!gestorMedico.crearEjercicioTerapeutico(ejercicio, medico)) {
+        ObjectMapper mapper = new ObjectMapper();
+        
+        EjercicioTerapeuticoDTO ejercicioDTO = mapper.readValue(ejercicio, EjercicioTerapeuticoDTO.class);
+
+        if (!gestorMedico.crearEjercicioTerapeutico(ejercicioDTO, medico, file)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+
+    }
+
+    /**
+     * Implementación servicio REST para actualizar un ejercicio terapéutico
+     *
+     * @param medico id identificador del médico
+     * @param ejercicio información del ejercicio a modificar
+     * @param file
+     * @return ResponseEntity con código correspondiente
+     * @throws java.io.IOException
+     */
+    @RequestMapping(value = "/{medico}/ejercicios", method = PUT)
+    public ResponseEntity<Void> editarEjercicioTerapeutico(
+            @PathVariable String medico,
+            @RequestParam("model") String ejercicio,
+            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.findAndRegisterModules();
+        EjercicioTerapeuticoDTO ejercicioDTO = mapper.readValue(ejercicio, EjercicioTerapeuticoDTO.class);
+
+        if (!gestorMedico.editarEjercicioTerapeutico(ejercicioDTO, medico, file)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
@@ -119,33 +164,6 @@ public class ServiciosMedicoREST {
         }
 
         return new ResponseEntity<>(ejercicioTerapeuticoRet, HttpStatus.OK);
-
-    }
-
-    /**
-     * Implementación servicio REST para actualizar un ejercicio terapéutico
-     *
-     * @param medico id identificador del médico
-     * @param ejercicio información del ejercicio a modificar
-     * @return ResponseEntity con código correspondiente
-     */
-    @RequestMapping(value = "/{medico}/ejercicios", method = PUT, consumes = "application/json")
-    public ResponseEntity<Void> guardarEjercicioTerapeutico(
-            @PathVariable String medico,
-            @RequestBody EjercicioTerapeuticoDTO ejercicio) {
-
-        if (ejercicio.getTitulo().trim().isEmpty() || ejercicio.getTitulo().trim().isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } else {
-            try {
-                gestorMedico.guardarEjercicioTerapeutico(ejercicio, medico);
-                return new ResponseEntity<>(HttpStatus.OK);
-            } catch (RuntimeException e) {
-                System.out.println(e.toString());
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
-
-        }
 
     }
 
@@ -368,7 +386,7 @@ public class ServiciosMedicoREST {
 
     }
 
-    @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos", method = POST, consumes = "application/json")
+    @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos", method = POST)
     public ResponseEntity<Void> asignarVideoEjercicio(
             @PathVariable String medico,
             @PathVariable Long idejercicio,

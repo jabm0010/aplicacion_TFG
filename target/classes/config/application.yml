@@ -7,7 +7,7 @@ spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
 spring.datasource.username: postgres    
 spring.datasource.password: jabm0010
 spring.jpa.properties.hibernate.dialect : org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.hibernate.ddl-auto : create
+spring.jpa.hibernate.ddl-auto : update
 spring.jpa.properties.hibernate.enable_lazy_load_no_trans: true
 spring.datasource.tomcat.max-active: 50
 
@@ -28,4 +28,9 @@ spring.mail.properties.mail.smtp.starttls.enable: true
 
 #Configuración streaming de videos
 spring.content.fs.filesystemRoot : C:\Users\jabm9\Desktop\TFG\Videos
-video.sourcefolder: C:\Users\jabm9\Desktop\TFG\Videos
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB

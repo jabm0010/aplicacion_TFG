@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.ujaen.apptfg.Servidor.DAOs.EjercicioTerapeuticoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.HistorialMedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
@@ -144,9 +145,11 @@ public class GestorMedico implements InterfazServiciosMedico {
      *
      * @param ejercicioTerapeuticoDTO información del ejercicio a crear
      * @param medicoId identificador del médico que crea el ejercicio
+     * @param video
+     * @return
      */
     @Override
-    public boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO, String medicoId) {
+    public boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO, String medicoId, MultipartFile video) {
 
         try {
             if (ejercicioTerapeuticoDTO.getTitulo().trim().isEmpty() || ejercicioTerapeuticoDTO.getDescripcion().trim().isEmpty()) {
@@ -158,13 +161,13 @@ public class GestorMedico implements InterfazServiciosMedico {
             }
 
             EjercicioTerapeutico ejercicioTerapeutico;
-            Video v = new Video();
-            if (ejercicioTerapeuticoDTO.getVideo() == null) {
+            if (video == null) {
                 ejercicioTerapeutico = new EjercicioTerapeutico(ejercicioTerapeuticoDTO);
             } else {
-                String identificadorVideo = medicoId + ejercicioTerapeuticoDTO.getIdentificador();
+                String identificadorVideo = UUID.randomUUID().toString();
+                Video v = new Video();
                 v.setIdentificador(identificadorVideo);
-                v.almacenarVideo(medicoId, ejercicioTerapeuticoDTO.getVideo());
+                v.almacenarVideo(identificadorVideo, video);
                 ejercicioTerapeutico = new EjercicioTerapeutico(ejercicioTerapeuticoDTO, v);
             }
             ejercicioDAO.crearEjercicioTerapeutic(ejercicioTerapeutico);
@@ -203,7 +206,7 @@ public class GestorMedico implements InterfazServiciosMedico {
 
             return ret_ejerciciosTerapeuticos;
         } catch (Exception e) {
-
+            e.toString();
         }
 
         return null;
@@ -219,6 +222,7 @@ public class GestorMedico implements InterfazServiciosMedico {
     @Override
     public EjercicioTerapeuticoDTO obtenerEjercicio(String medicoId, Long ejercicioTerapeuticoI) {
         try {
+
             Medico medicotmp = medicoDAO.buscarMedico(medicoId);
             if (medicotmp == null) {
                 throw new UsuarioNoRegistrado();
@@ -235,34 +239,44 @@ public class GestorMedico implements InterfazServiciosMedico {
      * Método para guardar los cambios realizados en un ejercicio terapétuico ya
      * existente
      *
-     * @param ejercicioTerapeuticoDTO ejercicio terapéutico actualizado
-     * @param medicoId identificador del mñedico
+     * @param ejercicioTerapeutico
+     * @param medico
+     * @param video
+     * @return
      */
     @Override
-    public void guardarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeuticoDTO ,String medicoId) {
+    public boolean editarEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico, MultipartFile video) {
         try {
-            Medico medicotmp = medicoDAO.buscarMedico(medicoId);
+            if (ejercicioTerapeutico.getTitulo().trim().isEmpty() || ejercicioTerapeutico.getDescripcion().trim().isEmpty()) {
+                throw new EjerciciosNoValidos();
+            }
+
+            Medico medicotmp = medicoDAO.buscarMedico(medico);
             if (medicotmp == null) {
                 throw new UsuarioNoRegistrado();
             }
 
             EjercicioTerapeutico ejerciciotmp;
             Video v = new Video();
-            if (ejercicioTerapeuticoDTO.getVideo() == null) {
-                ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeuticoDTO);
+            
+            if (video == null) {
+                ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeutico);
             } else {
-                String identificadorVideo = medicoId + ejercicioTerapeuticoDTO.getIdentificador();
+                String identificadorVideo = UUID.randomUUID().toString();
+                //String identificadorVideo = medicoId + ejercicioTerapeuticoDTO.getIdentificador();
                 v.setIdentificador(identificadorVideo);
-                v.almacenarVideo(medicoId, ejercicioTerapeuticoDTO.getVideo());
-                ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeuticoDTO, v);
+                v.almacenarVideo(identificadorVideo, video);
+                ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeutico, v);
             }
 
             medicotmp.editarEjercicioTerapeutico(ejerciciotmp);
 
             medicoDAO.actualizarMedico(medicotmp);
+            return true;
         } catch (Exception e) {
 
         }
+        return false;
     }
 
     /**

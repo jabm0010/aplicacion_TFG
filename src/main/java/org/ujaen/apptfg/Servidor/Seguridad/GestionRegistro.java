@@ -42,7 +42,7 @@ public class GestionRegistro {
         t.setUsuario(usuario);
         tokenActivacionDAO.nuevoToken(t);
 
-        String textoCorreoRegistro = "Para comenzar a utilizar la aplicación accede al siguiente enlace: ";
+        String textoCorreoRegistro = "Para comenzar a utilizar la aplicación acceda al siguiente enlace: ";
 
         textoCorreoRegistro += (url + "?token=" + token);
         servicioCorreo.sendSimpleMessage(usuario.getCorreoElectronico(), subjectCorreoRegistro, textoCorreoRegistro);

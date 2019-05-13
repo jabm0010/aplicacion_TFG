@@ -60,7 +60,7 @@ public class ClientePruebas {
                 String nombreEjercicio = "ejercicio" + i;
                 String descripcionEjercicio = "descripcion" + i;
                 EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO(nombreEjercicio, descripcionEjercicio);
-                serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, "usuario1@gmail.com");
+                serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, "usuario1@gmail.com",null);
             }
 
             PacienteDTO p = new PacienteDTO("paciente@gmail.com", "paciente0", "paciente0apellidos");
