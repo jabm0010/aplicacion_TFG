@@ -6,6 +6,7 @@
 package org.ujaen.apptfg.Servidor.ServiciosWeb;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
@@ -61,14 +62,23 @@ public class ServiciosPublicosREST {
     /**
      * Servicio REST para identificar a un usuario en la fase de registro con su
      * token
+     * 
      *
      * @param token
-     * @return
+     * @return GONE si el token de activación ha expirado. CONFLICT si no se ha encontrado el token de activación en el
+     * repositorio. UsuarioDTO con código de respuesta OK si el token ha sido correctamente identificado.
      */
     @RequestMapping(value = "/usuarios/{token}", method = GET, produces = "application/json")
     public ResponseEntity<UsuarioDTO> identificarToken(@PathVariable String token) {
         TokenActivacion tokenActivacion = tokenDAO.obtenerToken(token);
+        Calendar cal = Calendar.getInstance();
+
         if (tokenActivacion != null) {
+            if (tokenActivacion.getFechaExpiración().getTime() - cal.getTime().getTime() <= 0) {
+                tokenDAO.borrarToken(tokenActivacion);
+                return new ResponseEntity<>(HttpStatus.GONE);
+            }
+
             Usuario u = tokenActivacion.getUsuario();
             //En caso de que la cuenta de usuario ya haya sido activada
             if (u.isActivado()) {
@@ -135,6 +145,5 @@ public class ServiciosPublicosREST {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
-
 
 }

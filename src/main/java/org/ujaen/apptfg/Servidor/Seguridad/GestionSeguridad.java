@@ -40,11 +40,11 @@ public class GestionSeguridad extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable();
         httpSecurity.httpBasic();
 
-        httpSecurity.authorizeRequests().antMatchers("/pacientes/**").permitAll();
+        //httpSecurity.authorizeRequests().antMatchers("/pacientes/**").permitAll();
         httpSecurity.authorizeRequests().antMatchers("/usuarios").permitAll();
         httpSecurity.authorizeRequests().antMatchers("/usuarios/**").permitAll();
         httpSecurity.authorizeRequests().antMatchers("/administrador/**").permitAll();
-        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/medicos/{medico}/ejercicios/*").hasAnyRole("MEDICO","PACIENTE");
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/medicos/{medico}/ejercicios/*").hasAnyRole("MEDICO", "PACIENTE");
         httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/medicos/{medico}/**").access("hasRole('MEDICO') and #medico == principal.username");
         httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/medicos/{medico}/**").access("hasRole('MEDICO') and #medico == principal.username");
         httpSecurity.authorizeRequests().antMatchers(HttpMethod.PUT, "/medicos/{medico}/**").access("hasRole('MEDICO') and #medico == principal.username");
@@ -54,6 +54,10 @@ public class GestionSeguridad extends WebSecurityConfigurerAdapter {
         //Permitir que los pacientes puedan acceder a la información de los ejercicios
         //httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/medicos/{medico}/ejercicios/*").access("hasRole('MEDICO') or hasRole('PACIENTE')"); 
 
-        
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/pacientes/{paciente}/**").access("hasRole('PACIENTE') and #paciente == principal.username");
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/pacientes/{paciente}/**").access("hasRole('PACIENTE') and #paciente == principal.username");
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.PUT, "/pacientes/{paciente}/**").access("hasRole('PACIENTE') and #paciente == principal.username");
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.DELETE, "/pacientes/{paciente}/**").access("hasRole('PACIENTE') and #paciente == principal.username");
+
     }
 }

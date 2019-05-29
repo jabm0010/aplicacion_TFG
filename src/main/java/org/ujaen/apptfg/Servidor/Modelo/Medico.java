@@ -46,10 +46,10 @@ public class Medico extends Usuario {
     @ManyToMany
     private Map<String, Paciente> pacientes;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Map<Paciente, HistorialMedico> historialesMedicos;
+    @OneToMany(cascade = CascadeType.REMOVE)
+    private Map<String, HistorialMedico> historialesMedicos;
 
-    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "medico", cascade = CascadeType.REMOVE)
     private List<Terapia> listaTerapias;
 
     /**
@@ -138,6 +138,13 @@ public class Medico extends Usuario {
 
     }
 
+    public void eliminarPaciente(Paciente paciente){
+        if(this.pacientes.containsKey(paciente.getCorreoElectronico())){
+            this.pacientes.remove(paciente.getCorreoElectronico());
+        }
+    }
+    
+    
     /**
      * Método para crear una nueva terapia
      *
@@ -211,7 +218,7 @@ public class Medico extends Usuario {
         return listaEjercicios;
     }
 
-    //!!!revisar eficiencia de este método -> ¿añadir un mapa key = paciente value = terapias?
+   
     /**
      * Método para obtener las terapias asignadas por un médico a un paciente
      *
@@ -222,8 +229,9 @@ public class Medico extends Usuario {
         Paciente paciente = pacientes.get(p);
         List<Terapia> listaTerapias_ret = new ArrayList<>();
         listaTerapias_ret = paciente.getTerapiasPaciente();
+        List<Terapia> listaTerapiasMedico = listaTerapias;
         for (Terapia t : listaTerapias_ret) {
-            if (!listaTerapias.contains(t)) {
+            if (listaTerapiasMedico.contains(t)) {
                 listaTerapias_ret.remove(t);
             }
         }
@@ -239,31 +247,40 @@ public class Medico extends Usuario {
     /**
      * Método para inicializar el historial médico de un paciente
      *
-     * @param p
+     * @param idPaciente
      */
-    public void crearHistorialMedico(Paciente p) {
-        HistorialMedico h = new HistorialMedico();
-        getHistorialesMedicos().put(p, h);
+    public void crearHistorialMedico(String idPaciente, HistorialMedico h) {
+        getHistorialesMedicos().put(idPaciente, h);
     }
 
     /**
      * Método para obtener el historial médico asociado a un paciente
      *
-     * @param p paciente del que se quiere obtener su historial médico
+     * @param idPaciente
      * @return
      */
-    public HistorialMedico obtenerHistorialMedico(Paciente p) {
-        return getHistorialesMedicos().get(p);
+    public Long obtenerHistorialMedico(String idPaciente) {
+        return getHistorialesMedicos().get(idPaciente).getId();
     }
 
-    public void borrarHistorialMedico(Paciente p) {
-        getHistorialesMedicos().remove(p);
+    /**
+     * 
+     * @param idPaciente 
+     */
+    public void borrarHistorialMedico(String idPaciente) {
+        getHistorialesMedicos().remove(idPaciente);
     }
 
-    public void modificarHistorialMedico(String texto, Paciente p) {
-        HistorialMedico h = getHistorialesMedicos().get(p);
-        h.nuevoComentario(texto);
-
+    /**
+     * 
+     * @param texto
+     * @param idPaciente 
+     * @return  
+     */
+    public HistorialMedico modificarHistorialMedico(String texto, String idPaciente) {
+        getHistorialesMedicos().get(idPaciente).nuevoComentario(texto);
+        return  getHistorialesMedicos().get(idPaciente);
+        
     }
 
     public MedicoDTO medicoToDTO() {
@@ -320,14 +337,14 @@ public class Medico extends Usuario {
     /**
      * @return the historialesMedicos
      */
-    public Map<Paciente, HistorialMedico> getHistorialesMedicos() {
+    public Map<String, HistorialMedico> getHistorialesMedicos() {
         return historialesMedicos;
     }
 
     /**
      * @param historialesMedicos the historialesMedicos to set
      */
-    public void setHistorialesMedicos(Map<Paciente, HistorialMedico> historialesMedicos) {
+    public void setHistorialesMedicos(Map<String, HistorialMedico> historialesMedicos) {
         this.historialesMedicos = historialesMedicos;
     }
 

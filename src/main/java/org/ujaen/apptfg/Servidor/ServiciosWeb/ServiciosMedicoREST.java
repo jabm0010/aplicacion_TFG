@@ -78,7 +78,7 @@ public class ServiciosMedicoREST {
     ) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
-        
+
         EjercicioTerapeuticoDTO ejercicioDTO = mapper.readValue(ejercicio, EjercicioTerapeuticoDTO.class);
 
         if (!gestorMedico.crearEjercicioTerapeutico(ejercicioDTO, medico, file)) {
@@ -262,14 +262,11 @@ public class ServiciosMedicoREST {
             @PathVariable String paciente,
             @RequestBody TerapiaDTO t) {
 
-        try {
+        if (gestorMedico.asignarTerapia(paciente, medico, t)) {
+            return new ResponseEntity<>(HttpStatus.OK);
 
-            gestorMedico.asignarTerapia(paciente, medico, t);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @RequestMapping(value = "/{medico}/terapias/{paciente}", method = GET, produces = "application/json")
@@ -280,6 +277,7 @@ public class ServiciosMedicoREST {
         try {
             listaTerapias_ret = gestorMedico.obtenerTerapias(paciente, medico);
         } catch (Exception e) {
+            System.out.println(e.toString());
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
@@ -345,7 +343,7 @@ public class ServiciosMedicoREST {
     @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = GET, produces = "application/json")
     public ResponseEntity<List<MensajeDTO>> obtenerMensajesTerapia(
             @PathVariable String medico,
-            @PathVariable String terapia
+            @PathVariable Long terapia
     ) {
         List<MensajeDTO> mensajesTerapia = new ArrayList<>();
         mensajesTerapia = gestorMedico.obtenerMensajes(terapia);
@@ -360,7 +358,7 @@ public class ServiciosMedicoREST {
     @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = POST, produces = "application/json")
     public ResponseEntity<Void> enviarMensaje(
             @PathVariable String medico,
-            @PathVariable String terapia,
+            @PathVariable Long terapia,
             @RequestBody MensajeDTO mensaje
     ) {
         if (gestorMedico.enviarMensaje(terapia, mensaje.getContenido(), medico)) {
@@ -374,7 +372,7 @@ public class ServiciosMedicoREST {
     @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = PUT, produces = "application/json")
     public ResponseEntity<Void> modificarMensaje(
             @PathVariable String medico,
-            @PathVariable String terapia,
+            @PathVariable Long terapia,
             @RequestBody MensajeDTO mensaje
     ) {
 

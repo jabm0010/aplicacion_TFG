@@ -23,14 +23,15 @@ public interface InterfazServiciosPaciente {
     
     List<TerapiaDTO> obtenerTerapias(String paciente);
 
-    boolean actualizarTerapia(String paciente, String idTerapia, LocalDate fecha);
+    boolean actualizarTerapia(String paciente, Long idTerapia, LocalDate fecha);
 
-    boolean enviarMensaje(String idTerapia, String mensaje, String paciente);
+    boolean enviarMensaje(Long idTerapia, String mensaje, String paciente);
     
-    boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje);
+    boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje);
 
-    List<MensajeDTO> obtenerMensajes(String idTerapia);
+    List<MensajeDTO> obtenerMensajes(Long idTerapia);
 
     PacienteDTO obtenerPerfilUsuario(String paciente);
 
 }
+

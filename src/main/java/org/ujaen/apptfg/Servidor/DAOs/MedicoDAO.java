@@ -7,6 +7,8 @@ package org.ujaen.apptfg.Servidor.DAOs;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,17 +36,20 @@ public class MedicoDAO {
     }
 
     @Transactional
+    @Cacheable(value = "medico")
     public Medico buscarMedico(String correoElectronico) {
         Medico medico = em.find(Medico.class, correoElectronico);
         return medico;
     }
 
     @Transactional
+    @CacheEvict(value = "medico", key = "#medico?.correoElectronico")
     public void actualizarMedico(Medico medico) {
         em.merge(medico);
     }
 
     @Transactional
+    @CacheEvict(value = "medico", allEntries = true)
     public void borrarMedico(String correoElectronico) {
         Medico medico = em.find(Medico.class, correoElectronico);
         em.remove(medico);

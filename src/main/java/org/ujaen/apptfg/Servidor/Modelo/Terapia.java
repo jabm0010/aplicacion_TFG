@@ -33,14 +33,15 @@ import org.ujaen.apptfg.Servidor.Excepciones.FechaRealizacionTerapiaNoValida;
 public class Terapia implements Serializable {
 
     @Id
-    private String uniqueID;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private LocalDateTime fechaCreacion;
 
     @ElementCollection
     private List<LocalDate> fechas;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     private List<EjercicioTerapeutico> listaEjercicios;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -63,7 +64,7 @@ public class Terapia implements Serializable {
     private Chat mensajesTerapia;
 
     public Terapia() {
-        this.uniqueID = UUID.randomUUID().toString();
+        
         this.fechaCreacion = LocalDateTime.now();
         this.fechas = new ArrayList<>();
         this.duracionesEjercicios = new ArrayList<>();
@@ -164,17 +165,17 @@ public class Terapia implements Serializable {
     }
 
     /**
-     * @return the uniqueID
+     * @return the id
      */
-    public String getUniqueID() {
-        return uniqueID;
+    public Long getId() {
+        return id;
     }
 
     /**
-     * @param uniqueID the uniqueID to set
+     * @param id
      */
-    public void setUniqueID(String uniqueID) {
-        this.uniqueID = uniqueID;
+    public void setUniqueID(Long id) {
+        this.id = id;
     }
 
     /**

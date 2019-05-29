@@ -41,7 +41,7 @@ public interface InterfazServiciosMedico {
 
     MedicoDTO obtenerPerfilUsuario(String medico);
 
-    void asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t);
+    boolean asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t);
 
     List<TerapiaDTO> obtenerTerapias(String identificadorPaciente, String medico);
 
@@ -49,11 +49,11 @@ public interface InterfazServiciosMedico {
 
     boolean nuevoComentarioHistorialMedico(String medico, String paciente, String texto);
 
-    boolean enviarMensaje(String idTerapia, String mensaje, String medico);
+    boolean enviarMensaje(Long idTerapia, String mensaje, String medico);
 
-    boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje);
+    boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje);
 
-    List<MensajeDTO> obtenerMensajes(String idTerapia);
+    List<MensajeDTO> obtenerMensajes(Long idTerapia);
 
     //Pruebas - eliminar en el futuro
     void registroPruebas(MedicoDTO medico);

@@ -76,8 +76,16 @@ public class GestorPaciente implements InterfazServiciosPaciente {
             if (paciente.getImagen() != null) {
                 Imagen imagentmp = new Imagen(paciente.getImagen(), paciente.getNombreImagen());
                 imagenDAO.guardarImagen(imagentmp);
+
+                if (p.getImagenperfil() != null) {
+                    long idImagen = p.getImagenperfil().getId();
+                    p.setImagenperfil(null);
+                    imagenDAO.borrarImagen(idImagen);
+
+                }
                 p.setImagenperfil(imagentmp);
             }
+            pacienteDAO.actualizarPaciente(p);
             return true;
         } catch (Exception e) {
             return false;
@@ -98,7 +106,7 @@ public class GestorPaciente implements InterfazServiciosPaciente {
     }
 
     @Override
-    public boolean actualizarTerapia(String paciente, String idTerapia, LocalDate fecha) {
+    public boolean actualizarTerapia(String paciente, Long idTerapia, LocalDate fecha) {
 
         try {
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
@@ -117,7 +125,7 @@ public class GestorPaciente implements InterfazServiciosPaciente {
     }
 
     @Override
-    public boolean enviarMensaje(String idTerapia, String mensaje, String paciente) {
+    public boolean enviarMensaje(Long idTerapia, String mensaje, String paciente) {
         try {
             Paciente p = pacienteDAO.buscarPaciente(paciente);
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
@@ -131,7 +139,7 @@ public class GestorPaciente implements InterfazServiciosPaciente {
     }
 
     @Override
-    public boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje) {
+    public boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje) {
         try {
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
             t.getMensajesTerapia().modificarMensaje(idMensaje, mensaje);
@@ -144,7 +152,7 @@ public class GestorPaciente implements InterfazServiciosPaciente {
     }
 
     @Override
-    public List<MensajeDTO> obtenerMensajes(String idTerapia) {
+    public List<MensajeDTO> obtenerMensajes(Long idTerapia) {
         try {
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
             List<Mensaje> mensajesTerapiaSource = new ArrayList<>(t.getMensajesTerapia().getMensajes());
@@ -169,5 +177,7 @@ public class GestorPaciente implements InterfazServiciosPaciente {
         }
         return retPacienteDTO;
     }
+
+
 
 }

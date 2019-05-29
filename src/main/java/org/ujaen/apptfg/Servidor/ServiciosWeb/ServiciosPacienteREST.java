@@ -75,7 +75,7 @@ public class ServiciosPacienteREST {
     @RequestMapping(value = "/{paciente}/terapias/{terapia}", method = POST, produces = "application/json")
     public ResponseEntity<Void> realizarTerapia(
             @PathVariable String paciente,
-            @PathVariable String terapia,
+            @PathVariable Long terapia,
             @RequestBody LocalDate fechaRealizada) {
 
         if (gestorPaciente.actualizarTerapia(paciente, terapia, fechaRealizada)) {
@@ -89,7 +89,7 @@ public class ServiciosPacienteREST {
     @RequestMapping(value = "/{paciente}/terapias/{terapia}/mensajes", method = GET, produces = "application/json")
     public ResponseEntity<List<MensajeDTO>> obtenerMensajesTerapia(
             @PathVariable String paciente,
-            @PathVariable String terapia
+            @PathVariable Long terapia
     ) {
         List<MensajeDTO> mensajesTerapia = new ArrayList<>();
         mensajesTerapia = gestorPaciente.obtenerMensajes(terapia);
@@ -104,7 +104,7 @@ public class ServiciosPacienteREST {
     @RequestMapping(value = "/{paciente}/terapias/{terapia}/mensajes", method = POST, produces = "application/json")
     public ResponseEntity<Void> enviarMensaje(
             @PathVariable String paciente,
-            @PathVariable String terapia,
+            @PathVariable Long terapia,
             @RequestBody MensajeDTO mensaje
     ) {
         if (gestorPaciente.enviarMensaje(terapia, mensaje.getContenido(), paciente)) {
@@ -118,7 +118,7 @@ public class ServiciosPacienteREST {
     @RequestMapping(value = "/{paciente}/terapias/{terapia}/mensajes", method = PUT, produces = "application/json")
     public ResponseEntity<Void> modificarMensaje(
             @PathVariable String paciente,
-            @PathVariable String terapia,
+            @PathVariable Long terapia,
             @RequestBody MensajeDTO mensaje
     ) {
 
@@ -151,4 +151,21 @@ public class ServiciosPacienteREST {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Implementación servicio REST para obtener el perfil de un paciente
+     *
+     * @param paciente id identificador del paciente
+     * @param nuevoPerfil
+     * @return ResponseEntity con código correspondiente
+     */
+    @RequestMapping(value = "/{paciente}", method = PUT, produces = "application/json")
+    public ResponseEntity<Void> modificarPerfil(
+            @PathVariable String paciente,
+            @RequestBody PacienteDTO nuevoPerfil
+    ) {
+        if (gestorPaciente.configurarPerfil(nuevoPerfil)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
 }

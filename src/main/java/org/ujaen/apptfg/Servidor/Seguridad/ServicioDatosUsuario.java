@@ -31,8 +31,6 @@ public class ServicioDatosUsuario implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        System.out.println(userName);
-
         Medico m;
         Paciente p;
         m = medicoDAO.buscarMedico(userName);

@@ -7,6 +7,7 @@ package org.ujaen.apptfg.Servidor.DAOs;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,20 @@ public class HistorialMedicoDAO {
     public void crearHistorialMedico(HistorialMedico historialMedico) {
         em.persist(historialMedico);
     }
+
+    @Transactional
+    public void actualizarHistorialMedico(HistorialMedico historialMedico){
+        em.merge(historialMedico);
+    }
     
     @Transactional
-    public void borrarHistorialMedico(long id){
+    public HistorialMedico obtenerHistorialMedico(Long id){
+        return em.find(HistorialMedico.class, id);
+        
+    }
+    
+    @Transactional
+    public void borrarHistorialMedico(long id) {
         em.remove(em.find(HistorialMedico.class, id));
     }
 }

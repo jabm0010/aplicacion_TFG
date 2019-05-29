@@ -34,7 +34,7 @@ import org.ujaen.apptfg.Servidor.Modelo.Terapia;
  */
 public class TerapiaDTO {
 
-    private String idTerapia;
+    private Long idTerapia;
     
     private LocalDateTime fechaCreacion;
     
@@ -68,7 +68,7 @@ public class TerapiaDTO {
     
     
     public TerapiaDTO(Terapia t){
-        this.idTerapia = t.getUniqueID();
+        this.idTerapia = t.getId();
         this.fechas = t.getFechas();
         this.fechaCreacion = t.getFechaCreacion();
         this.comentarios = t.getComentarios();
@@ -177,14 +177,14 @@ public class TerapiaDTO {
     /**
      * @return the idTerapia
      */
-    public String getIdTerapia() {
+    public Long getIdTerapia() {
         return idTerapia;
     }
 
     /**
      * @param idTerapia the idTerapia to set
      */
-    public void setIdTerapia(String idTerapia) {
+    public void setIdTerapia(Long idTerapia) {
         this.idTerapia = idTerapia;
     }
 

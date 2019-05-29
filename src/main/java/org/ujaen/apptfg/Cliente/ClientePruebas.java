@@ -40,8 +40,8 @@ public class ClientePruebas {
 
             InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
 
-          
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
             for (int i = 0; i < 5; i++) {
                 String correo = "usuario" + i + "@gmail.com";
                 String nombre = "nombre" + i;
@@ -91,9 +91,28 @@ public class ClientePruebas {
             t.setFechas(fechas);
 
             serviciosMedico.asignarTerapia("paciente@gmail.com", "usuario1@gmail.com", t);
-
         } catch (Exception e) {
             System.out.println(e.toString());
+        }
+    }
+
+    void pruebaFuncionamientoModelosSuscripcion(InterfazServiciosMedico serviciosMedico) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String correo = "usuario1@gmail.com";
+        String nombre = "nombre1";
+        String apellidos = "apellidos1";
+        String clave = "clave1";
+        clave = passwordEncoder.encode(clave);
+        Medico.versionCuenta v = Medico.versionCuenta.BASICA;
+        MedicoDTO medicoDTO = new MedicoDTO(correo, nombre, apellidos, clave, v);
+
+        serviciosMedico.registroPruebas(medicoDTO);
+
+        for (int i = 0; i < 200; i++) {
+            PacienteDTO p = new PacienteDTO("paciente" + i + "@gmail.com", "paciente0", "paciente0apellidos");
+            p.setClave(passwordEncoder.encode("clave"));
+            System.out.println(i);
+            serviciosMedico.añadirPaciente("usuario1@gmail.com", p);
         }
     }
 

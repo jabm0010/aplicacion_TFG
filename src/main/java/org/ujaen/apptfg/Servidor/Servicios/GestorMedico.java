@@ -35,6 +35,7 @@ import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
+import org.ujaen.apptfg.Servidor.Excepciones.MaximoPacientesAlcanzado;
 import org.ujaen.apptfg.Servidor.Excepciones.UsuarioNoRegistrado;
 import org.ujaen.apptfg.Servidor.Seguridad.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.EjercicioTerapeutico;
@@ -132,6 +133,9 @@ public class GestorMedico implements InterfazServiciosMedico {
             if (medico.getImagen() != null) {
                 Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
                 imagenDAO.guardarImagen(imagentmp);
+                if (m.getImagenperfil() != null) {
+                    imagenDAO.borrarImagen(m.getImagenperfil().getId());
+                }
                 m.setImagenperfil(imagentmp);
             }
             return true;
@@ -258,7 +262,7 @@ public class GestorMedico implements InterfazServiciosMedico {
 
             EjercicioTerapeutico ejerciciotmp;
             Video v = new Video();
-            
+
             if (video == null) {
                 ejerciciotmp = new EjercicioTerapeutico(ejercicioTerapeutico);
             } else {
@@ -333,12 +337,21 @@ public class GestorMedico implements InterfazServiciosMedico {
         Medico medicotmp = medicoDAO.buscarMedico(medico);
         Paciente pacientetmp = new Paciente();
         pacientetmp = pacientetmp.pacienteFromDTO(paciente);
-        pacientetmp.setActivado(true); //Cambiar!!!!
+        pacientetmp.setActivado(true); //Cambiar
 
         pacienteDAO.registrarUsuario(pacientetmp);
-        medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(pacientetmp.getCorreoElectronico()));
 
-        medicotmp.crearHistorialMedico(pacientetmp); //It 4 inicializar historial médico
+        try {
+            medicotmp.añadirPaciente(pacienteDAO.buscarPaciente(pacientetmp.getCorreoElectronico()));
+        } catch (MaximoPacientesAlcanzado e) {
+            medicotmp.eliminarPaciente(pacientetmp);
+            medicoDAO.actualizarMedico(medicotmp);
+            pacienteDAO.borrarPaciente(pacientetmp.getCorreoElectronico());
+            return false;
+        }
+        HistorialMedico h = new HistorialMedico();
+        historialMedicoDAO.crearHistorialMedico(h);
+        medicotmp.crearHistorialMedico(pacientetmp.getCorreoElectronico(), h);
 
         medicoDAO.actualizarMedico(medicotmp);
 
@@ -346,9 +359,8 @@ public class GestorMedico implements InterfazServiciosMedico {
             gestionRegistro.envioCorreo(pacientetmp);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            historialMedicoDAO.borrarHistorialMedico(medicotmp.obtenerHistorialMedico(pacientetmp).getId());
-            //En caso de que exista un fallo en la generación del correo de activación de la cuenta se borra al paciente
+            medicotmp.eliminarPaciente(pacientetmp);
+            medicoDAO.actualizarMedico(medicotmp);
             pacienteDAO.borrarPaciente(pacientetmp.getCorreoElectronico());
 
             return false;
@@ -367,18 +379,26 @@ public class GestorMedico implements InterfazServiciosMedico {
      * @param medico clave del médico que asigna la terapia
      */
     @Override
-    public void asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t) {
+    public boolean asignarTerapia(String identificadorPaciente, String medico, TerapiaDTO t) {
 
-        Medico m = medicoDAO.buscarMedico(medico);
-        Terapia terapia = new Terapia();
-        terapia = m.crearTerapia(t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
-        terapia.setMedico(m);
-        medicoDAO.actualizarMedico(m);
-        //m.asignarTerapia(identificadorPaciente, t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
-        Paciente p = pacienteDAO.buscarPaciente(identificadorPaciente);
-        p.nuevaTerapia(terapia);
-        pacienteDAO.actualizarPaciente(p);
+        try {
 
+            Medico m = medicoDAO.buscarMedico(medico);
+            Terapia terapia;
+            terapia = m.crearTerapia(t.getEjerciciosTerapia(), t.getFechas(), t.getComentarios());
+            terapia.setMedico(m);
+            terapiaDAO.crearTerapia(terapia);
+            medicoDAO.actualizarMedico(m);
+
+            Paciente p = pacienteDAO.buscarPaciente(identificadorPaciente);
+            p.nuevaTerapia(terapia);
+            pacienteDAO.actualizarPaciente(p);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -390,11 +410,17 @@ public class GestorMedico implements InterfazServiciosMedico {
      */
     @Override
     public HistorialMedicoDTO obtenerHistorialMedico(String medico, String paciente) {
+        try {
+            Paciente p = pacienteDAO.buscarPaciente(paciente);
+            Medico m = medicoDAO.buscarMedico(medico);
 
-        Medico m = medicoDAO.buscarMedico(medico);
-        Paciente p = pacienteDAO.buscarPaciente(paciente);
-        HistorialMedico h = m.obtenerHistorialMedico(p);
-        return new HistorialMedicoDTO(h);
+            HistorialMedico h = historialMedicoDAO.obtenerHistorialMedico(m.obtenerHistorialMedico(p.getCorreoElectronico()));
+            return new HistorialMedicoDTO(h);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
     }
 
     @Override
@@ -402,10 +428,12 @@ public class GestorMedico implements InterfazServiciosMedico {
         try {
             Medico m = medicoDAO.buscarMedico(medico);
             Paciente p = pacienteDAO.buscarPaciente(paciente);
-            m.modificarHistorialMedico(texto, p);
+            HistorialMedico h = m.modificarHistorialMedico(texto, p.getCorreoElectronico());
+            historialMedicoDAO.actualizarHistorialMedico(h);
             medicoDAO.actualizarMedico(m);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
 
@@ -417,7 +445,9 @@ public class GestorMedico implements InterfazServiciosMedico {
         List<TerapiaDTO> terapias_ret = new ArrayList<>();
 
         Medico medicotmp = medicoDAO.buscarMedico(medico);
-        medicotmp.obtenerTerapias(identificadorPaciente).forEach((t) -> {
+        List<Terapia> terapiasSource = medicotmp.obtenerTerapias(identificadorPaciente);
+
+        terapiasSource.forEach((t) -> {
             terapias_ret.add(new TerapiaDTO(t));
         });
 
@@ -435,7 +465,7 @@ public class GestorMedico implements InterfazServiciosMedico {
     }
 
     @Override
-    public boolean enviarMensaje(String idTerapia, String mensaje, String medico) {
+    public boolean enviarMensaje(Long idTerapia, String mensaje, String medico) {
         try {
             Medico m = medicoDAO.buscarMedico(medico);
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
@@ -451,7 +481,7 @@ public class GestorMedico implements InterfazServiciosMedico {
     }
 
     @Override
-    public boolean editarMensaje(String idTerapia, String mensaje, Long idMensaje) {
+    public boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje) {
         try {
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
             t.getMensajesTerapia().modificarMensaje(idMensaje, mensaje);
@@ -464,7 +494,7 @@ public class GestorMedico implements InterfazServiciosMedico {
     }
 
     @Override
-    public List<MensajeDTO> obtenerMensajes(String idTerapia) {
+    public List<MensajeDTO> obtenerMensajes(Long idTerapia) {
         try {
             Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
             List<Mensaje> mensajesTerapiaSource = new ArrayList<>(t.getMensajesTerapia().getMensajes());

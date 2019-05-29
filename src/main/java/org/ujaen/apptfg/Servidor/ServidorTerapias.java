@@ -14,8 +14,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
 import org.ujaen.apptfg.Cliente.ClientePruebas;
 
 /**
@@ -24,6 +29,7 @@ import org.ujaen.apptfg.Cliente.ClientePruebas;
  */
 @SpringBootApplication()
 @ConfigurationProperties()
+@EnableCaching
 public class ServidorTerapias {
 
     public static void main(String[] args) {
@@ -35,6 +41,10 @@ public class ServidorTerapias {
         cliente.run();
 
     }
+    
+    
+
+
 
 //    @Bean
 //    public ServletWebServerFactory servletContainer() {

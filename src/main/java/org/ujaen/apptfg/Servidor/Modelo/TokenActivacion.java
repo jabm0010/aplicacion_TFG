@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  *
@@ -30,12 +31,21 @@ public class TokenActivacion {
     @OneToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
 
-    private Date fechaExpiración;
+    private Date fechaExpiración;    
+    boolean expirado;
 
-    private Date calcularFechaExpiración(int expiryTimeInMinutes) {
+    public TokenActivacion(){
+        fechaExpiración = calcularFechaExpiración(EXPIRATION);
+    }
+    
+    
+    
+    
+    
+    private Date calcularFechaExpiración(int tiempoExpiracion) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        cal.add(Calendar.MINUTE, tiempoExpiracion);
         return new Date(cal.getTime().getTime());
     }
 

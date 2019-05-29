@@ -33,4 +33,9 @@ public class TokenActivacionDAO {
     public TokenActivacion obtenerToken(String id){
         return em.find(TokenActivacion.class, id);
     }
+    
+    @Transactional
+    public void borrarToken(TokenActivacion t){
+        em.remove(t);
+    }
 }
