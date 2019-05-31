@@ -291,7 +291,7 @@ public class ServiciosMedicoREST {
             }
 
             Link l = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(ServiciosMedicoREST.class).
+                    ControllerLinkBuilder.methodOn(ServiciosTerapiasREST.class).
                             obtenerMensajesTerapia(medico, t.getIdTerapia())).withSelfRel();
             t.setLinkChatTerapia(l);
         }
@@ -340,49 +340,7 @@ public class ServiciosMedicoREST {
 
     }
 
-    @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = GET, produces = "application/json")
-    public ResponseEntity<List<MensajeDTO>> obtenerMensajesTerapia(
-            @PathVariable String medico,
-            @PathVariable Long terapia
-    ) {
-        List<MensajeDTO> mensajesTerapia = new ArrayList<>();
-        mensajesTerapia = gestorMedico.obtenerMensajes(terapia);
-        if (!mensajesTerapia.isEmpty()) {
-            return new ResponseEntity<>(mensajesTerapia, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
-    }
-
-    @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = POST, produces = "application/json")
-    public ResponseEntity<Void> enviarMensaje(
-            @PathVariable String medico,
-            @PathVariable Long terapia,
-            @RequestBody MensajeDTO mensaje
-    ) {
-        if (gestorMedico.enviarMensaje(terapia, mensaje.getContenido(), medico)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-    }
-
-    @RequestMapping(value = "/{medico}/terapias/{terapia}/mensajes", method = PUT, produces = "application/json")
-    public ResponseEntity<Void> modificarMensaje(
-            @PathVariable String medico,
-            @PathVariable Long terapia,
-            @RequestBody MensajeDTO mensaje
-    ) {
-
-        if (gestorMedico.editarMensaje(terapia, mensaje.getContenido(), mensaje.getIdentificador())) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-    }
 
     @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos", method = POST)
     public ResponseEntity<Void> asignarVideoEjercicio(

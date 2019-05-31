@@ -64,7 +64,7 @@ public class ServiciosPacienteREST {
 
             }
             Link l = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(ServiciosPacienteREST.class).
+                    ControllerLinkBuilder.methodOn(ServiciosTerapiasREST.class).
                             obtenerMensajesTerapia(paciente, t.getIdTerapia())).withSelfRel();
             t.setLinkChatTerapia(l);
 
@@ -86,49 +86,7 @@ public class ServiciosPacienteREST {
 
     }
 
-    @RequestMapping(value = "/{paciente}/terapias/{terapia}/mensajes", method = GET, produces = "application/json")
-    public ResponseEntity<List<MensajeDTO>> obtenerMensajesTerapia(
-            @PathVariable String paciente,
-            @PathVariable Long terapia
-    ) {
-        List<MensajeDTO> mensajesTerapia = new ArrayList<>();
-        mensajesTerapia = gestorPaciente.obtenerMensajes(terapia);
-        if (!mensajesTerapia.isEmpty()) {
-            return new ResponseEntity<>(mensajesTerapia, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
-    }
-
-    @RequestMapping(value = "/{paciente}/terapias/{terapia}/mensajes", method = POST, produces = "application/json")
-    public ResponseEntity<Void> enviarMensaje(
-            @PathVariable String paciente,
-            @PathVariable Long terapia,
-            @RequestBody MensajeDTO mensaje
-    ) {
-        if (gestorPaciente.enviarMensaje(terapia, mensaje.getContenido(), paciente)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-    }
-
-    @RequestMapping(value = "/{paciente}/terapias/{terapia}/mensajes", method = PUT, produces = "application/json")
-    public ResponseEntity<Void> modificarMensaje(
-            @PathVariable String paciente,
-            @PathVariable Long terapia,
-            @RequestBody MensajeDTO mensaje
-    ) {
-
-        if (gestorPaciente.editarMensaje(terapia, mensaje.getContenido(), mensaje.getIdentificador())) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-    }
 
     /**
      * Implementación servicio REST para obtener el perfil de un paciente
