@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -24,12 +25,6 @@ public interface InterfazServiciosPaciente {
     List<TerapiaDTO> obtenerTerapias(String paciente);
 
     boolean actualizarTerapia(String paciente, Long idTerapia, LocalDate fecha);
-
-    boolean enviarMensaje(Long idTerapia, String mensaje, String paciente);
-    
-    boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje);
-
-    List<MensajeDTO> obtenerMensajes(Long idTerapia);
 
     PacienteDTO obtenerPerfilUsuario(String paciente);
 

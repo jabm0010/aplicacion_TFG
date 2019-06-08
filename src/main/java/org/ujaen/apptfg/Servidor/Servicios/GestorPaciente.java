@@ -124,47 +124,7 @@ public class GestorPaciente implements InterfazServiciosPaciente {
         return true;
     }
 
-    @Override
-    public boolean enviarMensaje(Long idTerapia, String mensaje, String paciente) {
-        try {
-            Paciente p = pacienteDAO.buscarPaciente(paciente);
-            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
-            t.getMensajesTerapia().nuevoMensaje(p, mensaje);
-            terapiaDAO.actualizarTerapia(t);
 
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje) {
-        try {
-            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
-            t.getMensajesTerapia().modificarMensaje(idMensaje, mensaje);
-            terapiaDAO.actualizarTerapia(t);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
-    public List<MensajeDTO> obtenerMensajes(Long idTerapia) {
-        try {
-            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
-            List<Mensaje> mensajesTerapiaSource = new ArrayList<>(t.getMensajesTerapia().getMensajes());
-            List<MensajeDTO> mensajeRet = new ArrayList<>();
-            mensajesTerapiaSource.forEach((mensaje) -> {
-                mensajeRet.add(mensaje.MensajeToDTO());
-            });
-            return mensajeRet;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     @Override
     public PacienteDTO obtenerPerfilUsuario(String paciente) {

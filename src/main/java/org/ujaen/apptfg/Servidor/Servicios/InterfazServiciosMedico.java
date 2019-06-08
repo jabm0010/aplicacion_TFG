@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -25,7 +26,7 @@ public interface InterfazServiciosMedico {
 
     boolean registro(MedicoDTO medico);
 
-    boolean configurarPerfil(MedicoDTO medico);
+    boolean configurarPerfil(String medico, MedicoDTO medicoDTO);
 
     boolean crearEjercicioTerapeutico(EjercicioTerapeuticoDTO ejercicioTerapeutico, String medico, MultipartFile video);
 
@@ -49,18 +50,8 @@ public interface InterfazServiciosMedico {
 
     boolean nuevoComentarioHistorialMedico(String medico, String paciente, String texto);
 
-    boolean enviarMensaje(Long idTerapia, String mensaje, String medico);
-
-    boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje);
-
-    List<MensajeDTO> obtenerMensajes(Long idTerapia);
 
     //Pruebas - eliminar en el futuro
     void registroPruebas(MedicoDTO medico);
     
-    byte[] cargarVideo(String identificador);
-
-    boolean almacenarVideo(String medico, long idEjercicio, String identificador, String datos);
-    
-    boolean eliminarVideo(String medico, long idEjercicio, String identificador);
 }

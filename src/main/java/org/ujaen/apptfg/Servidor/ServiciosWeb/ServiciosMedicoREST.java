@@ -109,7 +109,7 @@ public class ServiciosMedicoREST {
         EjercicioTerapeuticoDTO ejercicioDTO = mapper.readValue(ejercicio, EjercicioTerapeuticoDTO.class);
 
         if (!gestorMedico.editarEjercicioTerapeutico(ejercicioDTO, medico, file)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -196,12 +196,12 @@ public class ServiciosMedicoREST {
      * @return ResponseEntity con código correspondiente
      */
     @RequestMapping(value = "/{medico}", method = PUT, produces = "application/json")
-    public ResponseEntity<Void> modificarPerfil(
+    public ResponseEntity<Void> modificarPerfilMedico(
             @PathVariable String medico,
             @RequestBody MedicoDTO nuevoPerfil
     ) {
 
-        if (gestorMedico.configurarPerfil(nuevoPerfil)) {
+        if (gestorMedico.configurarPerfil(medico, nuevoPerfil)) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
@@ -216,7 +216,7 @@ public class ServiciosMedicoREST {
      * pacientes
      * @return
      */
-    @RequestMapping(value = "/{medico}/pacientes", method = GET, produces = "application/json")
+        @RequestMapping(value = "/{medico}/pacientes", method = GET, produces = "application/json")
     public ResponseEntity<List<PacienteDTO>> obtenerListaPacientes(
             @PathVariable String medico) {
         List<PacienteDTO> pacientes = gestorMedico.obtenerPacientes(medico);
@@ -242,7 +242,7 @@ public class ServiciosMedicoREST {
             @RequestBody PacienteDTO paciente) {
 
         if (gestorMedico.añadirPaciente(medico, paciente)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -263,7 +263,7 @@ public class ServiciosMedicoREST {
             @RequestBody TerapiaDTO t) {
 
         if (gestorMedico.asignarTerapia(paciente, medico, t)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CREATED);
 
         }
         return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -278,7 +278,7 @@ public class ServiciosMedicoREST {
             listaTerapias_ret = gestorMedico.obtenerTerapias(paciente, medico);
         } catch (Exception e) {
             System.out.println(e.toString());
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         for (TerapiaDTO t : listaTerapias_ret) {
@@ -333,42 +333,14 @@ public class ServiciosMedicoREST {
             @RequestBody String texto) {
 
         if (gestorMedico.nuevoComentarioHistorialMedico(medico, paciente, texto)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-
-
-    @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos", method = POST)
-    public ResponseEntity<Void> asignarVideoEjercicio(
-            @PathVariable String medico,
-            @PathVariable Long idejercicio,
-            @RequestBody VideoDTO video) {
-
-        if (!gestorMedico.almacenarVideo(medico, idejercicio, video.getIdentificador(), video.getDatosVideo())) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
-
     }
 
-    @RequestMapping(value = "/{medico}/ejercicios/{idejercicio}/videos/{idvideo}", method = DELETE, produces = "application/json")
-    public ResponseEntity<Void> eliminarVideoEjercicio(
-            @PathVariable String medico,
-            @PathVariable Long idejercicio,
-            @PathVariable String idvideo) {
 
-        if (!gestorMedico.eliminarVideo(medico, idejercicio, idvideo)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
 
     @StoreRestResource(path = "videos")
     public interface VideoStore extends Store<String> {

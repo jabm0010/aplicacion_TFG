@@ -30,6 +30,7 @@ import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 import org.ujaen.apptfg.Servidor.Modelo.Usuario;
 import org.ujaen.apptfg.Servidor.Servicios.GestorMedico;
 import org.ujaen.apptfg.Servidor.Servicios.GestorPaciente;
+import org.ujaen.apptfg.Servidor.Servicios.GestorTerapia;
 
 /**
  *
@@ -41,29 +42,7 @@ import org.ujaen.apptfg.Servidor.Servicios.GestorPaciente;
 public class ServiciosTerapiasREST {
 
     @Autowired
-    GestorPaciente gestorPaciente;
-
-    @Autowired
-    GestorMedico gestorMedico;
-
-    @Autowired
-    MedicoDAO medicoDAO;
-
-    @Autowired
-    PacienteDAO pacienteDAO;
-
-    public Usuario.Rol determinarRolUsuario(String usuario) {
-        Medico m = medicoDAO.buscarMedico(usuario);
-        if (m != null) {
-            return Usuario.Rol.MEDICO;
-        }
-        Paciente p = pacienteDAO.buscarPaciente(usuario);
-        if (p != null) {
-            return Usuario.Rol.PACIENTE;
-        }
-
-        return null;
-    }
+    GestorTerapia gestorTerapia;
 
     @RequestMapping(value = "/{usuario}/{terapia}/mensajes", method = GET, produces = "application/json")
     public ResponseEntity<List<MensajeDTO>> obtenerMensajesTerapia(
@@ -71,15 +50,9 @@ public class ServiciosTerapiasREST {
             @PathVariable Long terapia
     ) {
 
-        Usuario.Rol rol = determinarRolUsuario(usuario);
-        if (rol == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        List<MensajeDTO> mensajesTerapia = new ArrayList<>();
-        if (rol == Usuario.Rol.MEDICO) {
-            mensajesTerapia = gestorMedico.obtenerMensajes(terapia);
-        } else {
-            mensajesTerapia = gestorPaciente.obtenerMensajes(terapia);
+        List<MensajeDTO> mensajesTerapia = gestorTerapia.obtenerMensajes(terapia, usuario);
+        if (mensajesTerapia == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(mensajesTerapia, HttpStatus.OK);
@@ -92,24 +65,11 @@ public class ServiciosTerapiasREST {
             @PathVariable Long terapia,
             @RequestBody MensajeDTO mensaje
     ) {
-        Usuario.Rol rol = determinarRolUsuario(usuario);
-        if (rol == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
 
-        if (rol == Usuario.Rol.MEDICO) {
-            if (gestorMedico.enviarMensaje(terapia, mensaje.getContenido(), usuario)) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
-        } else {
-            if (gestorPaciente.enviarMensaje(terapia, mensaje.getContenido(), usuario)) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
+        if (gestorTerapia.enviarMensaje(terapia, mensaje.getContenido(), usuario)) {
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
 
     }
 
@@ -119,25 +79,11 @@ public class ServiciosTerapiasREST {
             @PathVariable Long terapia,
             @RequestBody MensajeDTO mensaje
     ) {
-        Usuario.Rol rol = determinarRolUsuario(usuario);
-        if (rol == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
 
-        if (rol == Usuario.Rol.MEDICO) {
-            if (gestorMedico.editarMensaje(terapia, mensaje.getContenido(), mensaje.getIdentificador())) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
-        } else {
-            if (gestorPaciente.editarMensaje(terapia, mensaje.getContenido(), mensaje.getIdentificador())) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
+        if (gestorTerapia.editarMensaje(terapia, mensaje.getContenido(), mensaje.getIdentificador(), usuario)) {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
 
     }
 

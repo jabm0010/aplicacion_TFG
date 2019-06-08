@@ -38,7 +38,7 @@ public class TerapiaDAO {
     }
 
     @Transactional
-    public void actualizarTerapia(String id) {
+    public void actualizarTerapia(Long id) {
         em.merge(em.find(Terapia.class, id));
     }
 

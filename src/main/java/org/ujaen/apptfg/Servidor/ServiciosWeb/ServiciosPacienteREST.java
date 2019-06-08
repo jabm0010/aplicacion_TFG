@@ -51,7 +51,7 @@ public class ServiciosPacienteREST {
             listaTerapias_ret = gestorPaciente.obtenerTerapias(paciente);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND    );
         }
 
         for (TerapiaDTO t : listaTerapias_ret) {
@@ -73,7 +73,7 @@ public class ServiciosPacienteREST {
     }
 
     @RequestMapping(value = "/{paciente}/terapias/{terapia}", method = POST, produces = "application/json")
-    public ResponseEntity<Void> realizarTerapia(
+    public ResponseEntity<Void> realizarSesionTerapia(
             @PathVariable String paciente,
             @PathVariable Long terapia,
             @RequestBody LocalDate fechaRealizada) {

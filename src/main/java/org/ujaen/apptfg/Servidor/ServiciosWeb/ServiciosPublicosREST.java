@@ -69,7 +69,7 @@ public class ServiciosPublicosREST {
      * repositorio. UsuarioDTO con código de respuesta OK si el token ha sido correctamente identificado.
      */
     @RequestMapping(value = "/usuarios/{token}", method = GET, produces = "application/json")
-    public ResponseEntity<UsuarioDTO> identificarToken(@PathVariable String token) {
+    public ResponseEntity<UsuarioDTO> identificarTokenRegistro(@PathVariable String token) {
         TokenActivacion tokenActivacion = tokenDAO.obtenerToken(token);
         Calendar cal = Calendar.getInstance();
 
@@ -117,10 +117,10 @@ public class ServiciosPublicosREST {
 
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/login/usuarios", method = POST, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/usuarios/login", method = POST, consumes = "application/json", produces = "application/json")
     public ResponseEntity<UsuarioDTO> identificarUsuarioLogin(@RequestBody UsuarioDTO usuario) throws UnsupportedEncodingException {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         byte[] claveByte = Base64.decodeBase64(usuario.getClave());

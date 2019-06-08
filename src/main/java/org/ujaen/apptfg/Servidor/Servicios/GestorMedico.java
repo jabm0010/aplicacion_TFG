@@ -115,23 +115,25 @@ public class GestorMedico implements InterfazServiciosMedico {
 
     /**
      * Método para modificar los parámetros de clave e imagen de perfil de un
-     * médico. Si alguno
+     * médico.Si alguno
      *
      * @param medico
+     * @param medicoDTO
+     * @return 
      */
     @Override
-    public boolean configurarPerfil(MedicoDTO medico) {
+    public boolean configurarPerfil(String medico, MedicoDTO medicoDTO) {
 
         try {
-            Medico m = medicoDAO.buscarMedico(medico.getCorreoElectronico());
+            Medico m = medicoDAO.buscarMedico(medico);
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            if (!medico.getClave().isBlank() && !passwordEncoder.matches(medico.getClave(), m.getClave())) {
-                String clave = passwordEncoder.encode(medico.getClave());
+            if (!medicoDTO.getClave().isBlank() && !passwordEncoder.matches(medicoDTO.getClave(), m.getClave())) {
+                String clave = passwordEncoder.encode(medicoDTO.getClave());
                 m.setClave(clave);
             }
 
-            if (medico.getImagen() != null) {
-                Imagen imagentmp = new Imagen(medico.getImagen(), medico.getNombreImagen());
+            if (medicoDTO.getImagen() != null) {
+                Imagen imagentmp = new Imagen(medicoDTO.getImagen(), medicoDTO.getNombreImagen());
                 imagenDAO.guardarImagen(imagentmp);
                 if (m.getImagenperfil() != null) {
                     imagenDAO.borrarImagen(m.getImagenperfil().getId());
@@ -140,6 +142,7 @@ public class GestorMedico implements InterfazServiciosMedico {
             }
             return true;
         } catch (Exception e) {
+            System.out.println(e.toString());
             return false;
         }
     }
@@ -461,111 +464,6 @@ public class GestorMedico implements InterfazServiciosMedico {
         m = Medico.medicoFromDTO(medico);
         m.setActivado(true);
         medicoDAO.registrarUsuario(m);
-
-    }
-
-    @Override
-    public boolean enviarMensaje(Long idTerapia, String mensaje, String medico) {
-        try {
-            Medico m = medicoDAO.buscarMedico(medico);
-            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
-
-            t.getMensajesTerapia().nuevoMensaje(m, mensaje);
-            terapiaDAO.actualizarTerapia(t);
-
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
-    public boolean editarMensaje(Long idTerapia, String mensaje, Long idMensaje) {
-        try {
-            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
-            t.getMensajesTerapia().modificarMensaje(idMensaje, mensaje);
-            terapiaDAO.actualizarTerapia(t);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
-    public List<MensajeDTO> obtenerMensajes(Long idTerapia) {
-        try {
-            Terapia t = terapiaDAO.obtenerTerapia(idTerapia);
-            List<Mensaje> mensajesTerapiaSource = new ArrayList<>(t.getMensajesTerapia().getMensajes());
-            List<MensajeDTO> mensajeRet = new ArrayList<>();
-            mensajesTerapiaSource.forEach((mensaje) -> {
-                mensajeRet.add(mensaje.MensajeToDTO());
-            });
-            return mensajeRet;
-        } catch (Exception e) {
-            return null;
-        }
-
-    }
-
-    @Override
-    public byte[] cargarVideo(String identificador) {
-        Video v = new Video(identificador);
-        try {
-            return v.cargarVideo();
-        } catch (Exception e) {
-        }
-
-        return null;
-    }
-
-    /**
-     *
-     * @param medico
-     * @param idEjercicio
-     * @param identificador
-     * @param datos
-     * @return
-     */
-    @Override
-    public boolean almacenarVideo(String medico, long idEjercicio, String identificador, String datos) {
-        try {
-            Medico m = medicoDAO.buscarMedico(medico);
-            EjercicioTerapeutico e = m.obtenerEjercicio(idEjercicio);
-            Video v = new Video(identificador);
-            v.almacenarVideo(identificador, datos);
-            e.setVideoEjercicio(v);
-            medicoDAO.actualizarMedico(m);
-        } catch (Exception e) {
-            e.toString();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     *
-     * @param medico
-     * @param idEjercicio
-     * @param identificador
-     * @return
-     */
-    @Override
-    public boolean eliminarVideo(String medico, long idEjercicio, String identificador) {
-        try {
-            Medico m = medicoDAO.buscarMedico(medico);
-            EjercicioTerapeutico e = m.obtenerEjercicio(idEjercicio);
-            Video v = new Video(identificador);
-            v.eliminarVideo(identificador);
-            e.setVideoEjercicio(null);
-            videoDAO.borrarVideo(identificador);
-            medicoDAO.actualizarMedico(m);
-        } catch (Exception e) {
-            e.toString();
-            return false;
-        }
-        return true;
 
     }
 
