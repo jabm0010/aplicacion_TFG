@@ -24,6 +24,7 @@ import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.Excepciones.EjerciciosNoValidos;
 import org.ujaen.apptfg.Servidor.Excepciones.MaximoPacientesAlcanzado;
 import org.ujaen.apptfg.Servidor.Excepciones.PacienteYaAñadido;
+import org.ujaen.apptfg.Servidor.Utiils.FuncioneAuxiliares;
 
 /**
  * @author Juan Antonio Béjar Martos
@@ -157,7 +158,9 @@ public class Medico extends Usuario {
     public Terapia crearTerapia(List<InfoEjerciciosTerapia> ejercicios,
             List<LocalDate> fechasTerapia, String comentarios) {
         Terapia t = new Terapia();
-        t.setFechas(fechasTerapia);
+        List<LocalDate> fechasTerapiaFinal = FuncioneAuxiliares.eliminarValoresDuplicadosLista(fechasTerapia);
+        
+        t.setFechas(fechasTerapiaFinal);
         t.setComentarios(comentarios);
 
         try {

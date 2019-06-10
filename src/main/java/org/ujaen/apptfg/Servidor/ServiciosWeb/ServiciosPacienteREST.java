@@ -121,7 +121,7 @@ public class ServiciosPacienteREST {
             @PathVariable String paciente,
             @RequestBody PacienteDTO nuevoPerfil
     ) {
-        if (gestorPaciente.configurarPerfil(nuevoPerfil)) {
+        if (gestorPaciente.configurarPerfil(paciente, nuevoPerfil)) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.CONFLICT);

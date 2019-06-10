@@ -20,7 +20,7 @@ public interface InterfazServiciosPaciente {
 
     boolean registro(PacienteDTO paciente);
 
-    boolean configurarPerfil(PacienteDTO paciente);
+    boolean configurarPerfil(String paciente, PacienteDTO pacienteDTO);
     
     List<TerapiaDTO> obtenerTerapias(String paciente);
 

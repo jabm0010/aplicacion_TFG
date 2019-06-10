@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.ujaen.apptfg.Servidor.DAOs.ImagenDAO;
+import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
 import org.ujaen.apptfg.Servidor.DAOs.TerapiaDAO;
 import org.ujaen.apptfg.Servidor.DTOs.MensajeDTO;
@@ -38,6 +39,9 @@ public class GestorPaciente implements InterfazServiciosPaciente {
 
     @Autowired
     TerapiaDAO terapiaDAO;
+    
+    @Autowired
+    MedicoDAO medicoDAO;
 
     @Override
     public boolean registro(PacienteDTO paciente) {
@@ -63,18 +67,18 @@ public class GestorPaciente implements InterfazServiciosPaciente {
     }
 
     @Override
-    public boolean configurarPerfil(PacienteDTO paciente) {
+    public boolean configurarPerfil(String paciente, PacienteDTO pacienteDTO) {
 
         try {
-            Paciente p = pacienteDAO.buscarPaciente(paciente.getCorreoElectronico());
+            Paciente p = pacienteDAO.buscarPaciente(paciente);
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            if (!paciente.getClave().isBlank() && !passwordEncoder.matches(paciente.getClave(), p.getClave())) {
-                String clave = passwordEncoder.encode(paciente.getClave());
+            if (!pacienteDTO.getClave().isBlank() && !passwordEncoder.matches(pacienteDTO.getClave(), p.getClave())) {
+                String clave = passwordEncoder.encode(pacienteDTO.getClave());
                 p.setClave(clave);
             }
 
-            if (paciente.getImagen() != null) {
-                Imagen imagentmp = new Imagen(paciente.getImagen(), paciente.getNombreImagen());
+            if (pacienteDTO.getImagen() != null) {
+                Imagen imagentmp = new Imagen(pacienteDTO.getImagen(), pacienteDTO.getNombreImagen());
                 imagenDAO.guardarImagen(imagentmp);
 
                 if (p.getImagenperfil() != null) {
@@ -116,6 +120,9 @@ public class GestorPaciente implements InterfazServiciosPaciente {
             }
             t.actualizarFechas(fecha);
             terapiaDAO.actualizarTerapia(t);
+            //Necesario actualizar el médico también
+            medicoDAO.actualizarMedico(t.getMedico());
+            
 
         } catch (Exception e) {
             e.toString();

@@ -38,11 +38,13 @@ public class TerapiaDAO {
     }
 
     @Transactional
+    @CacheEvict(value = "medico")
     public void actualizarTerapia(Long id) {
         em.merge(em.find(Terapia.class, id));
     }
 
     @Transactional
+    @CacheEvict(value = "medico")
     public void actualizarTerapia(Terapia t) {
         em.merge(t);
     }
