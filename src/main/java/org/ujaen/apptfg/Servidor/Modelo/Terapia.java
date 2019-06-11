@@ -72,16 +72,14 @@ public class Terapia implements Serializable {
         this.fechasRealizadas = new ArrayList<>();
         this.medico = null;
         this.mensajesTerapia = new Chat();
-        actualizarProgreso();
+
 
     }
 
     public void actualizarFechas(LocalDate fechaRealizada) {
-        if (fechas.contains(fechaRealizada) && !fechasRealizadas.contains(fechaRealizada)) {
+        if ( !fechasRealizadas.contains(fechaRealizada)) {
             fechasRealizadas.add(fechaRealizada);
-            actualizarProgreso();
-            
-            
+   
         }else{
             throw new FechaRealizacionTerapiaNoValida();
         }
@@ -89,10 +87,6 @@ public class Terapia implements Serializable {
         
     }
 
-    private int actualizarProgreso(){
-        return 1;
-        //return fechasRealizadas.size() * 100 / fechas.size();
-    }
     
     /**
      * @return the fechaCreacion

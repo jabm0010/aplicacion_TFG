@@ -25,7 +25,7 @@ import javax.persistence.OneToOne;
 public class Usuario {
 
     public enum Rol {
-        MEDICO, PACIENTE
+        MEDICO, PACIENTE, ADMINISTRADOR
     }
 
     @Id

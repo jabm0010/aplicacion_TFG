@@ -10,10 +10,14 @@ import java.util.UUID;
 import javax.mail.SendFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.ujaen.apptfg.Servidor.DAOs.AdministradorDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.TokenActivacionDAO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
+import org.ujaen.apptfg.Servidor.Modelo.Administrador;
 import org.ujaen.apptfg.Servidor.Seguridad.GestionRegistro;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
@@ -31,6 +35,9 @@ public class GestorAdministrador implements InterfazServiciosAdministrador {
 
     @Autowired
     GestionRegistro gestionRegistro;
+    
+    @Autowired
+    AdministradorDAO administradorDAO;
 
     /**
      * Primera parte del registro de usuarios de tipo médico. Se almacena un
@@ -71,8 +78,21 @@ public class GestorAdministrador implements InterfazServiciosAdministrador {
     @Override
     public void modificarMedico(MedicoDTO medico) {
         Medico medicotmp = medicoDAO.buscarMedico(medico.getCorreoElectronico());
-        medicotmp = Medico.medicoFromDTO(medico);
+        medicotmp.setNombre(medico.getNombre());
+        medicotmp.setApellidos(medico.getApellidos());
+        medicotmp.setVersionCuenta(medico.getVersionCuenta());
+        
         medicoDAO.actualizarMedico(medicotmp);
+    }
+
+    @Override
+    public void crearAdministrador(String correoElectronico, String clave) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String claveEncriptada = passwordEncoder.encode(clave);
+        Administrador admin = new Administrador(correoElectronico,claveEncriptada);
+        
+        administradorDAO.registrarUsuario(admin);
+        
     }
 
 }

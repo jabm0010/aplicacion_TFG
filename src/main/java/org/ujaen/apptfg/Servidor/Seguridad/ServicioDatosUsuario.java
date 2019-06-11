@@ -11,8 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.ujaen.apptfg.Servidor.DAOs.AdministradorDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
+import org.ujaen.apptfg.Servidor.Modelo.Administrador;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 
@@ -28,21 +30,29 @@ public class ServicioDatosUsuario implements UserDetailsService {
 
     @Autowired
     PacienteDAO pacienteDAO;
+    
+    @Autowired
+    AdministradorDAO administradorDAO;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        System.out.println(userName);
         Medico m;
         Paciente p;
+        Administrador a;
         m = medicoDAO.buscarMedico(userName);
         p = pacienteDAO.buscarPaciente(userName);
-        UserDetails userDetails;
-        if (m == null && p == null) {
+        a = administradorDAO.buscarAdministrador(userName);
+        UserDetails userDetails = null;
+        if (m == null && p == null && a == null) {
             throw new UsernameNotFoundException("Usuario no encontrado");
         } else {
             if (m != null) {
                 userDetails = User.withUsername(userName).password("{bcrypt}" + m.getClave()).roles("MEDICO").build();
-            } else {
+            } else if(p!=null){
                 userDetails = User.withUsername(userName).password("{bcrypt}" + p.getClave()).roles("PACIENTE").build();
+            } else if( a != null){
+                 userDetails = User.withUsername(userName).password("{bcrypt}" + a.getClave()).roles("ADMINISTRADOR").build();
             }
         }
 

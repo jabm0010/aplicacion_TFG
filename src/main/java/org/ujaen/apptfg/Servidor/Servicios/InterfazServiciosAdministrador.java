@@ -18,5 +18,7 @@ public interface InterfazServiciosAdministrador {
       MedicoDTO obtenerMedico(String medico);
       
       void modificarMedico(MedicoDTO medico);
+      
+      void crearAdministrador(String correoElectronico, String clave);
     
 }

@@ -19,6 +19,7 @@ import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.TerapiaDTO;
 import org.ujaen.apptfg.Servidor.Modelo.InfoEjerciciosTerapia;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
+import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosAdministrador;
 import org.ujaen.apptfg.Servidor.Servicios.InterfazServiciosMedico;
 
 /**
@@ -38,6 +39,11 @@ public class ClientePruebas {
         try {
             System.out.println("Ejecutando cliente pruebas");
 
+            InterfazServiciosAdministrador serviciosAdministrador = (InterfazServiciosAdministrador) context.getBean("gestorAdministrador");
+            serviciosAdministrador.crearAdministrador("administrador1", "claveAdministrador");
+            
+            
+            
             InterfazServiciosMedico serviciosMedico = (InterfazServiciosMedico) context.getBean("gestorMedico");
 
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -60,12 +66,11 @@ public class ClientePruebas {
                 String nombreEjercicio = "ejercicio" + i;
                 String descripcionEjercicio = "descripcion" + i;
                 EjercicioTerapeuticoDTO ejercicioTerapeutico = new EjercicioTerapeuticoDTO(nombreEjercicio, descripcionEjercicio);
-                serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, "usuario1@gmail.com",null);
+                serviciosMedico.crearEjercicioTerapeutico(ejercicioTerapeutico, "usuario1@gmail.com", null);
             }
 
             PacienteDTO p = new PacienteDTO("paciente@gmail.com", "paciente0", "paciente0apellidos");
             p.setClave(passwordEncoder.encode("clave"));
-            
 
             serviciosMedico.añadirPaciente("usuario1@gmail.com", p);
 

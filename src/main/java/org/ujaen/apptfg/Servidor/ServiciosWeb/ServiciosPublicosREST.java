@@ -8,8 +8,6 @@ package org.ujaen.apptfg.Servidor.ServiciosWeb;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.json.JSONParser;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import org.springframework.web.bind.annotation.RestController;
+import org.ujaen.apptfg.Servidor.DAOs.AdministradorDAO;
 import org.ujaen.apptfg.Servidor.DAOs.MedicoDAO;
 import org.ujaen.apptfg.Servidor.DAOs.PacienteDAO;
 import org.ujaen.apptfg.Servidor.DAOs.TokenActivacionDAO;
 import org.ujaen.apptfg.Servidor.DTOs.MedicoDTO;
 import org.ujaen.apptfg.Servidor.DTOs.PacienteDTO;
 import org.ujaen.apptfg.Servidor.DTOs.UsuarioDTO;
+import org.ujaen.apptfg.Servidor.Modelo.Administrador;
 import org.ujaen.apptfg.Servidor.Modelo.Medico;
 import org.ujaen.apptfg.Servidor.Modelo.Paciente;
 import org.ujaen.apptfg.Servidor.Modelo.TokenActivacion;
@@ -58,6 +58,9 @@ public class ServiciosPublicosREST {
 
     @Autowired
     PacienteDAO pacienteDAO;
+    
+    @Autowired
+    AdministradorDAO administradorDAO;
 
     /**
      * Servicio REST para identificar a un usuario en la fase de registro con su
@@ -128,6 +131,7 @@ public class ServiciosPublicosREST {
         clave = clave.trim();
         Medico m = medicoDAO.buscarMedico(usuario.getCorreoElectronico());
         Paciente p = pacienteDAO.buscarPaciente(usuario.getCorreoElectronico());
+        Administrador a = administradorDAO.buscarAdministrador(usuario.getCorreoElectronico());
         if (m != null) {
             if (passwordEncoder.matches(clave, m.getClave()) && m.isActivado()) {
                 UsuarioDTO u = new UsuarioDTO();
@@ -138,6 +142,12 @@ public class ServiciosPublicosREST {
             if (passwordEncoder.matches(clave, p.getClave()) && p.isActivado()) {
                 UsuarioDTO u = new UsuarioDTO();
                 u.setRol(Usuario.Rol.PACIENTE);
+                return new ResponseEntity<>(u, HttpStatus.OK);
+            }
+        } else if (a != null){
+            if (passwordEncoder.matches(clave, a.getClave())) {
+                UsuarioDTO u = new UsuarioDTO();
+                u.setRol(Usuario.Rol.ADMINISTRADOR);
                 return new ResponseEntity<>(u, HttpStatus.OK);
             }
         }
