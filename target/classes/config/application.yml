@@ -1,6 +1,6 @@
 ## YAML Template.
 ---
-
+java.runtime.versio: 11
 #Configuración capa persistencia
 spring.datasource.driver-class-name: org.postgresql.Driver
 spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
