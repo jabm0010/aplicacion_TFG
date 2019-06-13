@@ -48,7 +48,7 @@ public class Mensaje {
     public void modificarMensaje(String contenido) {
         this.contenido = contenido;
         this.fechaActualización = LocalDateTime.now();
-        editado = true;
+        this.editado = true;
     }
 
     public MensajeDTO MensajeToDTO() {

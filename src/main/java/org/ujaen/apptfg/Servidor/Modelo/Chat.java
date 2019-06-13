@@ -46,11 +46,12 @@ public class Chat {
     public void modificarMensaje(Long id, String contenido){
         for(Mensaje m : mensajes){
             if(Objects.equals(m.getId(), id)){
-                m.setContenido(contenido);
+                m.modificarMensaje(contenido);
             }
         }
        
-    }
+    } 
+    
     
     
     /**
